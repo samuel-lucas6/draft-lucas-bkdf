@@ -5,6 +5,7 @@ category: info
 
 ipr: trust200902
 keyword: Internet-Draft
+submissiontype: IRTF
 
 stand_alone: yes
 smart_quotes: yes
@@ -496,7 +497,7 @@ hash: 716043dff777b44aa7b88dcbab12c078abecfac9d289c5b5195967aa63440dfb
 ~~~
 password: 70617373776f7264
 
-salt: 
+salt:
 
 spaceCost: 3
 
@@ -566,7 +567,7 @@ hash: 1832bd8e5cbeba1cb174a13838095e7e66508e9bf04c40178990adbc8ba9eb6f
 ### Test Vector 4
 
 ~~~
-password: 
+password:
 
 salt: 73616c74
 
