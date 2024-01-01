@@ -298,22 +298,22 @@ counter = 0
 
 buffer[0] = Hash(LE64(counter++) || password || salt)
 for m = 1 to spaceCost - 1
-	buffer[m] = Hash(LE64(counter++) || buffer[m - 1])
+    buffer[m] = Hash(LE64(counter++) || buffer[m - 1])
 
 for t = 0 to timeCost - 1
-	for m = 0 to spaceCost - 1
-		if m == 0
-			previous = buffer[spaceCost - 1]
-		else
-			previous = buffer[m - 1]
-		
-		buffer[m] = Hash(LE64(counter++) || previous || buffer[m])
+    for m = 0 to spaceCost - 1
+        if m == 0
+            previous = buffer[spaceCost - 1]
+        else
+            previous = buffer[m - 1]
 
-		for i = 0 to delta - 1
-			idxBlock = Hash(LE64(t) || LE64(m) || LE64(i))
-			idxBlock = Hash(LE64(counter++) || salt || idxBlock)
-			other = BI(idxBlock) % spaceCost
-			buffer[m] = Hash(LE64(counter++) || buffer[m] || buffer[INT32(other)])
+        buffer[m] = Hash(LE64(counter++) || previous || buffer[m])
+
+        for i = 0 to delta - 1
+            idxBlock = Hash(LE64(t) || LE64(m) || LE64(i))
+            idxBlock = Hash(LE64(counter++) || salt || idxBlock)
+            other = BI(idxBlock) % spaceCost
+            buffer[m] = Hash(LE64(counter++) || buffer[m] || buffer[INT32(other)])
 
 return buffer[spaceCost - 1]
 ~~~
@@ -345,12 +345,12 @@ Steps:
 outputs = List(parallelism, HASH_LEN)
 
 parallel for i = 0 to parallelism - 1
-	newSalt = salt || LE64(i + 1)
-	outputs[i] = Balloon(password, newSalt, spaceCost, timeCost, delta)
+    newSalt = salt || LE64(i + 1)
+    outputs[i] = Balloon(password, newSalt, spaceCost, timeCost, delta)
 
 foreach output in outputs
-	for i = 0 to output.Length - 1
-		hash[i] = hash[i] ^ output[i]
+    for i = 0 to output.Length - 1
+        hash[i] = hash[i] ^ output[i]
 
 return Hash(password || salt || hash)
 ~~~
