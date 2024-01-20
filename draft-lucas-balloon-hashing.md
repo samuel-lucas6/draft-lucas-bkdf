@@ -261,10 +261,16 @@ Operations:
 Constants:
 
 - `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this is the minimum output length to obtain the maximum advertised security level. For example, a 256-bit output for an XOF targeting 128-bit security.
+- `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
+- `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
 - `MIN_SPACECOST`: the minimum space cost, which is 1.
+- `MAX_SPACECOST`: the maximum space cost, which is 4294967295.
 - `MIN_TIMECOST`: the minimum time cost, which is 1.
+- `MAX_TIMECOST`: the maximum time cost, which is 16777215.
 - `MIN_PARALLELISM`: the minimum parallelism, which is 1.
+- `MAX_PARALLELISM`: the maximum parallelism, which is 16777215.
 - `MIN_DELTA`: the minimum delta, which is 3.
+- `MAX_DELTA`: the maximum delta, which is 100.
 
 # The Balloon Function
 
@@ -280,11 +286,11 @@ The Balloon function can be divided into three steps:
 
 Inputs:
 
-- `password`: the password to be hashed.
-- `salt`: the unique salt.
-- `spaceCost`: the memory size in blocks, which MUST be at least `MIN_SPACECOST`. A block is the size of the hash function output length in bytes.
-- `timeCost`: the number of rounds, which MUST be at least `MIN_TIMECOST`.
-- `delta`: the number of dependencies per block (a security parameter), which MUST be at least `MIN_DELTA`.
+- `password`: the password to be hashed, which MUST NOT be greater than `MAX_PASSWORD` bytes long.
+- `salt`: the unique salt, which MUST NOT be greater than `MAX_SALT` bytes long.
+- `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST`. A block is the size of the hash function output length in bytes.
+- `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
+- `delta`: the number of dependencies per block (a security parameter), which MUST be an integer between `MIN_DELTA` and `MAX_DELTA`.
 
 Outputs:
 
@@ -328,12 +334,12 @@ A limitation of Balloon is that it lacks parallelism because the value of each b
 
 Inputs:
 
-- `password`: the password to be hashed.
-- `salt`: the unique salt.
-- `spaceCost`: the memory size in blocks, which MUST be at least `MIN_SPACECOST`. A block is the size of the hash function output length in bytes.
-- `timeCost`: the number of rounds, which MUST be at least `MIN_TIMECOST`.
-- `parallelism`: the number of CPU cores/Balloon calls in parallel, which MUST be at least `MIN_PARALLELISM`.
-- `delta`: the number of dependencies per block (a security parameter), which MUST be at least `MIN_DELTA`.
+- `password`: the password to be hashed, which MUST NOT be greater than `MAX_PASSWORD` bytes long.
+- `salt`: the unique salt, which MUST NOT be greater than `MAX_SALT` bytes long.
+- `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST`. A block is the size of the hash function output length in bytes.
+- `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
+- `parallelism`: the number of CPU cores/Balloon calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
+- `delta`: the number of dependencies per block (a security parameter), which MUST be an integer between `MIN_DELTA` and `MAX_DELTA`.
 
 Outputs:
 
