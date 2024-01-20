@@ -593,5 +593,4 @@ hash: f8767fe04059cef67b4427cda99bf8bcdd983959dbd399a5e63ea04523716c23
 
 Balloon was designed by Dan Boneh, Henry Corrigan-Gibbs, and Stuart Schechter.
 
-Thank you to the Rust Crypto contributors for making Balloon implementations interoperable.
-
+Thank you to the Rust Crypto contributors for making Balloon implementations interoperable and Henry Corrigan-Gibbs for his helpful comments.
