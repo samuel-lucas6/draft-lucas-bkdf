@@ -231,9 +231,9 @@ This document describes Balloon, a memory-hard function suitable for password ha
 Balloon {{BCS16}} is a memory-hard password hashing and password-based key derivation function that was published shortly after the Password Hashing Competition (PHC), which recommended Argon2 {{?RFC9106}}. It is mentioned in a NIST Special Publication on authentication {{SP800-63B}} and has several advantages over prior password hashing algorithms:
 
 - It has proven memory-hardness properties, making it resistant against sequential GPU/ASIC attacks. An adversary trying to save space pays a large penalty in computation time.
-- It can be instantiated with any cryptographic hash function or XOF, making it a mode of operation for these existing algorithms.
+- It can be instantiated with any cryptographic hash function or XOF, making it a mode of operation for these existing algorithms. No new, unstudied primitives are required.
 - It uses a password-independent memory access pattern, making it resistant to cache-timing attacks. This property is especially relevant in cloud computing environments where multiple users can share the same physical machine.
-- It is easy to implement whilst offering acceptable performance.
+- It is easy to implement whilst being fast enough for real-world use.
 
 Unfortunately, the paper did not fully specify the algorithm nor provide guidance on parameters. Therefore, this document aims to rectify the situation based on existing interoperable implementations, real-world password hashing guidance, and research since the paper.
 
@@ -386,7 +386,7 @@ It is RECOMMENDED to use a cryptographic hash function/XOF that is fast in softw
 
 # Choosing the Parameters
 
-The higher the `spaceCost`, `timeCost`, and `delta`, the longer it takes to compute an output. If these values are too small, security is unnecessarily reduced. If they are too large, there is a risk of user frustration and denial-of-service for different types of user devices and servers. To make matters even more complicated, these parameters may need to be increased over time as hardware gets faster.
+The higher the `spaceCost`, `timeCost`, and `delta`, the longer it takes to compute an output. If these values are too small, security is unnecessarily reduced. If they are too large, there is a risk of user frustration and denial-of-service for different types of user devices and servers. To make matters even more complicated, these parameters may need to be increased over time as hardware gets faster/smaller.
 
 The following procedure can be used to choose parameters:
 
