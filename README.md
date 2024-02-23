@@ -13,6 +13,10 @@ This is the working area for the individual Internet-Draft, "Balloon Hashing".
 - Rust: [RustCrypto/balloon-hash](https://github.com/RustCrypto/password-hashes/tree/master/balloon-hash)
 - Python: [nachonavarro/balloon-hashing](https://github.com/nachonavarro/balloon-hashing)
 - Go: [unkaktus/balloon](https://github.com/unkaktus/balloon)
+- Dart: [elliotwutingfeng/balloon_hashing](https://github.com/elliotwutingfeng/balloon_hashing)
+- Julia: [elliotwutingfeng/BalloonHashing.jl](https://github.com/elliotwutingfeng/BalloonHashing.jl)
+- Kotlin: [elliotwutingfeng/balloon-hashing-kotlin](https://github.com/elliotwutingfeng/balloon-hashing-kotlin)
+- Ruby: [elliotwutingfeng/balloon-hashing](https://github.com/elliotwutingfeng/balloon-hashing)
 
 ## Contributing
 
