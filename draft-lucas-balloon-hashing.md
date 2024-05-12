@@ -272,13 +272,13 @@ Constants:
 - `MIN_DELTA`: the minimum delta, which is 3.
 - `MAX_DELTA`: the maximum delta, which is 100.
 
-# The Balloon Function
+# The Expand-Mix-Extract (EME) Function
 
 ~~~
-Balloon(password, salt, spaceCost, timeCost, delta)
+EME(password, salt, spaceCost, timeCost, delta)
 ~~~
 
-The Balloon function can be divided into three steps:
+The EME function can be divided into three steps:
 
 1. Expand: a large buffer is filled with pseudorandom bytes derived by repeatedly hashing the password and salt. This buffer is divided into blocks the size of the hash function output length.
 2. Mix: the buffer is mixed for the number of rounds specified by the user. Each block becomes equal to the hash of the previous block, the current block, and delta other blocks 'randomly' chosen from the buffer based on the salt.
@@ -324,13 +324,13 @@ for t = 0 to timeCost - 1
 return buffer[spaceCost - 1]
 ~~~
 
-# The Balloon-M Function
+# The Balloon Algorithm
 
 ~~~
-BalloonM(password, salt, spaceCost, timeCost, parallelism, delta)
+Balloon(password, salt, spaceCost, timeCost, parallelism, delta)
 ~~~
 
-A limitation of Balloon is that it lacks parallelism because the value of each block depends on the value of the previous block. Balloon-M addresses this by invoking Balloon in parallel using multiple cores, XORing the outputs, and hashing the password, salt, and XORed output concatenated together. This provides greater memory hardness without increasing the delay.
+A limitation of EME is that it lacks parallelism because the value of each block depends on the value of the previous block. Balloon addresses this by invoking EME in parallel using multiple cores, XORing the outputs, and hashing the password, salt, and XORed output concatenated together. This provides greater memory hardness without increasing the delay.
 
 Inputs:
 
@@ -338,7 +338,7 @@ Inputs:
 - `salt`: the unique salt, which MUST NOT be greater than `MAX_SALT` bytes long.
 - `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST`. A block is the size of the hash function output length in bytes.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
-- `parallelism`: the number of CPU cores/Balloon calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
+- `parallelism`: the number of CPU cores/EME calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
 - `delta`: the number of dependencies per block (a security parameter), which MUST be an integer between `MIN_DELTA` and `MAX_DELTA`.
 
 Outputs:
@@ -352,7 +352,7 @@ outputs = List(parallelism, HASH_LEN)
 
 parallel for i = 0 to parallelism - 1
     newSalt = salt || LE64(i + 1)
-    outputs[i] = Balloon(password, newSalt, spaceCost, timeCost, delta)
+    outputs[i] = EME(password, newSalt, spaceCost, timeCost, delta)
 
 foreach output in outputs
     for i = 0 to output.Length - 1
@@ -363,15 +363,13 @@ return Hash(password || salt || hash)
 
 # Implementation Considerations
 
-In the context of a cryptographic library, it is RECOMMENDED to only provide users access to Balloon-M. Otherwise, users will be left wondering which variant to use and may incorrectly believe Balloon-M with `parallelism = 1` is equivalent to Balloon.
-
 Implementations MAY hardcode `delta = MIN_DELTA` to avoid user confusion since other password hashing algorithms do not have this parameter. Moreover, the performance/security tradeoff is unclear from the paper.
 
 Whilst the pseudocode uses a list of byte arrays for the buffer, slicing portions of a single large byte array to access/update blocks will likely be more performant.
 
 Similarly, using a byte array counter instead of an integer that gets repeatedly converted to a byte array will likely aid performance.
 
-With Balloon-M, the XORing of outputs can be skipped if `parallelism = 1`.
+The XORing of outputs can be skipped if `parallelism = 1`.
 
 Finally, it is recommended to use an incremental hash function API rather than manually copying byte arrays to concatenate inputs as this is cleaner and may be more efficient.
 
@@ -391,7 +389,7 @@ The higher the `spaceCost`, `timeCost`, and `delta`, the longer it takes to comp
 The following procedure can be used to choose parameters:
 
 1. If configurable in the implementation, set `delta` to 3. This value is used in the paper {{BCS16}}.
-2. If using Balloon-M, set the `parallelism` to 1 on a server and 4 otherwise. This assumes most user devices have at least 4 CPU cores.
+2. Set the `parallelism` to 1 on a server and 4 otherwise. This assumes most user devices have at least 4 CPU cores.
 3. Establish the maximum acceptable delay for the user. For example, 100-500 ms for authentication, 250-1000 ms for file encryption, and 1000-5000 ms for disk encryption. On servers, you also need to factor in the maximum number of authentication attempts per second.
 4. Determine the maximum amount of memory available, taking into account different types of user devices and denial-of-service. For instance, mobile phones versus laptops/desktops.
 5. Convert the MiB/GiB memory size to bytes. Then set `spaceCost` to `bytes / HASH_LEN`, which is the number of blocks.
@@ -411,10 +409,10 @@ $balloon-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
 ~~~
 
 - `balloon-hash`: where `hash` is the proper, correctly punctuated name of the hash function in lowercase. For example, `sha-256`, not `sha256`. Another example is `sha3-256`, not `sha3256` or `sha-3-256`. Finally, `sha-512-256` for SHA-512 truncated to 256 bits, and `sha-512/256` for the SHA-512/256 algorithm.
-- `v=version`: this is version 1 of Balloon. If the design is modified, the version will be incremented.
+- `v=version`: this is version 2 of Balloon. If the design is modified, the version will be incremented.
 - `m=spaceCost`: the memory size in blocks, not KiB.
 - `t=timeCost`: the number of rounds.
-- `p=parallelism`: 0 if Balloon and 1+ for Balloon-M.
+- `p=parallelism`: the number of CPU cores/EME calls in parallel.
 - `salt`: the salt encoded in Base64 with no padding {{!RFC4648}}.
 - `hash`: the full/untruncated Balloon output encoded in Base64 with no padding {{!RFC4648}}.
 
@@ -464,7 +462,7 @@ This document has no IANA actions.
 
 # Test Vectors
 
-## Balloon-SHA-256
+## EME-SHA-256
 
 ### Test Vector 1
 
@@ -514,7 +512,7 @@ delta: 3
 hash: 20aa99d7fe3f4df4bd98c655c5480ec98b143107a331fd491deda885c4d6a6cc
 ~~~
 
-## Balloon-M-SHA-256
+## Balloon-SHA-256
 
 ### Test Vector 1
 
@@ -591,6 +589,6 @@ hash: f8767fe04059cef67b4427cda99bf8bcdd983959dbd399a5e63ea04523716c23
 # Acknowledgments
 {:numbered="false"}
 
-Balloon was designed by Dan Boneh, Henry Corrigan-Gibbs, and Stuart Schechter.
+The original version of Balloon was designed by Dan Boneh, Henry Corrigan-Gibbs, and Stuart Schechter.
 
-Thank you to the Rust Crypto contributors for making Balloon implementations interoperable and Henry Corrigan-Gibbs for his helpful comments.
+Thank you to Henry Corrigan-Gibbs for his helpful comments.
