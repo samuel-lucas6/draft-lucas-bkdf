@@ -269,13 +269,12 @@ Constants:
 - `MAX_TIMECOST`: the maximum time cost, which is 16777215.
 - `MIN_PARALLELISM`: the minimum parallelism, which is 1.
 - `MAX_PARALLELISM`: the maximum parallelism, which is 16777215.
-- `MIN_DELTA`: the minimum delta, which is 3.
-- `MAX_DELTA`: the maximum delta, which is 100.
+- `DELTA`: the number of dependencies per block (a security parameter), which is 3.
 
 # The Expand-Mix-Extract (EME) Function
 
 ~~~
-EME(password, salt, spaceCost, timeCost, delta)
+EME(password, salt, spaceCost, timeCost)
 ~~~
 
 The EME function can be divided into three steps:
@@ -290,7 +289,6 @@ Inputs:
 - `salt`: the unique salt, which MUST NOT be greater than `MAX_SALT` bytes long.
 - `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST`. A block is the size of the hash function output length in bytes.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
-- `delta`: the number of dependencies per block (a security parameter), which MUST be an integer between `MIN_DELTA` and `MAX_DELTA`.
 
 Outputs:
 
@@ -315,7 +313,7 @@ for t = 0 to timeCost - 1
 
         buffer[m] = Hash(LE64(counter++) || previous || buffer[m])
 
-        for i = 0 to delta - 1
+        for i = 0 to DELTA - 1
             idxBlock = Hash(LE64(t) || LE64(m) || LE64(i))
             idxBlock = Hash(LE64(counter++) || salt || idxBlock)
             other = BI(idxBlock) % spaceCost
@@ -327,7 +325,7 @@ return buffer[spaceCost - 1]
 # The Balloon Algorithm
 
 ~~~
-Balloon(password, salt, spaceCost, timeCost, parallelism, delta)
+Balloon(password, salt, spaceCost, timeCost, parallelism)
 ~~~
 
 A limitation of EME is that it lacks parallelism because the value of each block depends on the value of the previous block. Balloon addresses this by invoking EME in parallel using multiple cores, XORing the outputs, and hashing the password, salt, and XORed output concatenated together. This provides greater memory hardness without increasing the delay.
@@ -339,7 +337,6 @@ Inputs:
 - `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST`. A block is the size of the hash function output length in bytes.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 - `parallelism`: the number of CPU cores/EME calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
-- `delta`: the number of dependencies per block (a security parameter), which MUST be an integer between `MIN_DELTA` and `MAX_DELTA`.
 
 Outputs:
 
@@ -352,7 +349,7 @@ outputs = List(parallelism, HASH_LEN)
 
 parallel for i = 0 to parallelism - 1
     newSalt = salt || LE64(i + 1)
-    outputs[i] = EME(password, newSalt, spaceCost, timeCost, delta)
+    outputs[i] = EME(password, newSalt, spaceCost, timeCost)
 
 foreach output in outputs
     for i = 0 to output.Length - 1
@@ -362,8 +359,6 @@ return Hash(password || salt || hash)
 ~~~
 
 # Implementation Considerations
-
-Implementations MAY hardcode `delta = MIN_DELTA` to avoid user confusion since other password hashing algorithms do not have this parameter. Moreover, the performance/security tradeoff is unclear from the paper.
 
 Whilst the pseudocode uses a list of byte arrays for the buffer, slicing portions of a single large byte array to access/update blocks will likely be more performant.
 
@@ -384,17 +379,16 @@ It is RECOMMENDED to use a cryptographic hash function/XOF that is fast in softw
 
 # Choosing the Parameters
 
-The higher the `spaceCost`, `timeCost`, and `delta`, the longer it takes to compute an output. If these values are too small, security is unnecessarily reduced. If they are too large, there is a risk of user frustration and denial-of-service for different types of user devices and servers. To make matters even more complicated, these parameters may need to be increased over time as hardware gets faster/smaller.
+The higher the `spaceCost` and `timeCost`, the longer it takes to compute an output. If these values are too small, security is unnecessarily reduced. If they are too large, there is a risk of user frustration and denial-of-service for different types of user devices and servers. To make matters even more complicated, these parameters may need to be increased over time as hardware gets faster/smaller.
 
 The following procedure can be used to choose parameters:
 
-1. If configurable in the implementation, set `delta` to 3. This value is used in the paper {{BCS16}}.
-2. Set the `parallelism` to 1 on a server and 4 otherwise. This assumes most user devices have at least 4 CPU cores.
-3. Establish the maximum acceptable delay for the user. For example, 100-500 ms for authentication, 250-1000 ms for file encryption, and 1000-5000 ms for disk encryption. On servers, you also need to factor in the maximum number of authentication attempts per second.
-4. Determine the maximum amount of memory available, taking into account different types of user devices and denial-of-service. For instance, mobile phones versus laptops/desktops.
-5. Convert the MiB/GiB memory size to bytes. Then set `spaceCost` to `bytes / HASH_LEN`, which is the number of blocks.
-6. Find the `timeCost` that brings you closest to the maximum acceptable delay or target number of authentication attempts per second by running benchmarks.
-7. If `timeCost` is only 1, reduce `spaceCost` to be able to increase `timeCost`. Performing multiple rounds is beneficial for security {{AB17}}.
+1. Set the `parallelism` to 1 on a server and 4 otherwise. This assumes most user devices have at least 4 CPU cores.
+2. Establish the maximum acceptable delay for the user. For example, 100-500 ms for authentication, 250-1000 ms for file encryption, and 1000-5000 ms for disk encryption. On servers, you also need to factor in the maximum number of authentication attempts per second.
+3. Determine the maximum amount of memory available, taking into account different types of user devices and denial-of-service. For instance, mobile phones versus laptops/desktops.
+4. Convert the MiB/GiB memory size to bytes. Then set `spaceCost` to `bytes / HASH_LEN`, which is the number of blocks.
+5. Find the `timeCost` that brings you closest to the maximum acceptable delay or target number of authentication attempts per second by running benchmarks.
+6. If `timeCost` is only 1, reduce `spaceCost` to be able to increase `timeCost`. Performing multiple rounds is beneficial for security {{AB17}}.
 
 Regrettably, Balloon has not yet been sufficiently investigated for generic parameter recommendations to be made. This is also difficult given how various cryptographic hash functions can be used.
 
@@ -440,7 +434,7 @@ If possible, store the password in protected memory and/or erase the password fr
 
 The salt MUST be unique. It SHOULD be randomly generated using a cryptographically secure pseudorandom number generator (CSPRNG). However, it MAY be deterministic and predictable if random generation is not possible. It SHOULD be at least 128 bits long and SHOULD NOT exceed 256 bits.
 
-The `spaceCost`, `timeCost`, `parallelism`, and `delta` MUST be carefully chosen to avoid denial-of-service and user frustration whilst ensuring adequate protection against password cracking. Similarly, systems MUST check for overly large user-specified parameters (e.g. passwords) to prevent denial-of-service attacks.
+The `spaceCost`, `timeCost`, and `parallelism` MUST be carefully chosen to avoid denial-of-service and user frustration whilst ensuring adequate protection against password cracking. Similarly, systems MUST check for overly large user-specified parameters (e.g. passwords) to prevent denial-of-service attacks.
 
 Avoid using hardcoded parameters (e.g. `spaceCost`/`timeCost`) when performing password hashing; these SHOULD be stored as part of the password hash, as described in {{encoding-password-hashes}}. With key derivation, hardcoded parameters are acceptable if protocol versioning is used.
 
@@ -475,8 +469,6 @@ spaceCost: 1
 
 timeCost: 1
 
-delta: 3
-
 hash: eefda4a8a75b461fa389c1dcfaf3e9dfacbc26f81f22e6f280d15cc18c417545
 ~~~
 
@@ -491,8 +483,6 @@ spaceCost: 1024
 
 timeCost: 3
 
-delta: 3
-
 hash: 716043dff777b44aa7b88dcbab12c078abecfac9d289c5b5195967aa63440dfb
 ~~~
 
@@ -506,8 +496,6 @@ salt:
 spaceCost: 3
 
 timeCost: 3
-
-delta: 3
 
 hash: 20aa99d7fe3f4df4bd98c655c5480ec98b143107a331fd491deda885c4d6a6cc
 ~~~
@@ -527,8 +515,6 @@ timeCost: 1
 
 parallelism: 1
 
-delta: 3
-
 hash: 97a11df9382a788c781929831d409d3599e0b67ab452ef834718114efdcd1c6d
 ~~~
 
@@ -544,8 +530,6 @@ spaceCost: 1
 timeCost: 1
 
 parallelism: 16
-
-delta: 3
 
 hash: a67b383bb88a282aef595d98697f90820adf64582a4b3627c76b7da3d8bae915
 ~~~
@@ -563,8 +547,6 @@ timeCost: 3
 
 parallelism: 4
 
-delta: 3
-
 hash: 1832bd8e5cbeba1cb174a13838095e7e66508e9bf04c40178990adbc8ba9eb6f
 ~~~
 
@@ -580,8 +562,6 @@ spaceCost: 3
 timeCost: 3
 
 parallelism: 2
-
-delta: 3
 
 hash: f8767fe04059cef67b4427cda99bf8bcdd983959dbd399a5e63ea04523716c23
 ~~~
