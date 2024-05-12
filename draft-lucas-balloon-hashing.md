@@ -254,9 +254,8 @@ Operations:
 - `a.Slice(i, l)`: the copy of `l` bytes from byte array `a`, starting at index `i`.
 - `List(i, l)`: the creation of a new list containing `i` byte arrays, each with length `l`.
 - `Hash(a)`: collision-resistant hashing of the byte array `a`.
-- `BI(a)`: the conversion of byte array `a` into an unsigned, little-endian BigInteger.
-- `INT32(x)`: the casting of BigInteger `x` into a signed 32-bit integer.
 - `LE64(x)`: the little-endian encoding of unsigned 64-bit integer `x`.
+- `ReadLE64(a)`: the conversion of byte array `a` into an unsigned, little-endian 64-bit integer.
 
 Constants:
 
@@ -316,8 +315,8 @@ for t = 0 to timeCost - 1
         for i = 0 to DELTA - 1
             idxBlock = Hash(LE64(t) || LE64(m) || LE64(i))
             idxBlock = Hash(LE64(counter++) || salt || idxBlock)
-            other = BI(idxBlock) % spaceCost
-            buffer[m] = Hash(LE64(counter++) || buffer[m] || buffer[INT32(other)])
+            other = ReadLE64(idxBlock.Slice(0, 8)) % spaceCost
+            buffer[m] = Hash(LE64(counter++) || buffer[m] || buffer[other])
 
 return buffer[spaceCost - 1]
 ~~~
