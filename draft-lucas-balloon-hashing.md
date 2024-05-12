@@ -249,7 +249,7 @@ Operations:
 - `a ^ b`: the bitwise XOR of `a` and `b`.
 - `a % b`: the remainder when dividing `a` by `b`.
 - `a || b`: the concatenation of `a` and `b`.
-- `a[i]`: index 'i' of byte array/list 'a'.
+- `a[i]`: index `i` of byte array/list `a`.
 - `a.Length`: the length of `a` in bytes.
 - `a.Slice(i, l)`: the copy of `l` bytes from byte array `a`, starting at index `i`.
 - `List(i, l)`: the creation of a new list containing `i` byte arrays, each with length `l`.
