@@ -263,7 +263,7 @@ Constants:
 - `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
 - `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
 - `MIN_SPACECOST`: the minimum space cost, which is 1.
-- `MAX_SPACECOST`: the maximum space cost, which is 4294967295.
+- `MAX_SPACECOST`: the maximum space cost, which is 4294967296.
 - `MIN_TIMECOST`: the minimum time cost, which is 1.
 - `MAX_TIMECOST`: the maximum time cost, which is 16777215.
 - `MIN_PARALLELISM`: the minimum parallelism, which is 1.
@@ -286,7 +286,7 @@ Inputs:
 
 - `password`: the password to be hashed, which MUST NOT be greater than `MAX_PASSWORD` bytes long.
 - `salt`: the unique salt, which MUST NOT be greater than `MAX_SALT` bytes long.
-- `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST`. A block is the size of the hash function output length in bytes.
+- `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST` that is a power of 2. A block is the size of the hash function output length in bytes.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 
 Outputs:
@@ -333,7 +333,7 @@ Inputs:
 
 - `password`: the password to be hashed, which MUST NOT be greater than `MAX_PASSWORD` bytes long.
 - `salt`: the unique salt, which MUST NOT be greater than `MAX_SALT` bytes long.
-- `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST`. A block is the size of the hash function output length in bytes.
+- `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST` that is a power of 2. A block is the size of the hash function output length in bytes.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 - `parallelism`: the number of CPU cores/EME calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
 
@@ -385,7 +385,7 @@ The following procedure can be used to choose parameters:
 1. Set the `parallelism` to 1 on a server and 4 otherwise. This assumes most user devices have at least 4 CPU cores.
 2. Establish the maximum acceptable delay for the user. For example, 100-500 ms for authentication, 250-1000 ms for file encryption, and 1000-5000 ms for disk encryption. On servers, you also need to factor in the maximum number of authentication attempts per second.
 3. Determine the maximum amount of memory available, taking into account different types of user devices and denial-of-service. For instance, mobile phones versus laptops/desktops.
-4. Convert the MiB/GiB memory size to bytes. Then set `spaceCost` to `bytes / HASH_LEN`, which is the number of blocks.
+4. Convert the power of 2 MiB/GiB memory size to bytes. Then set `spaceCost` to `bytes / HASH_LEN`, which is the number of blocks.
 5. Find the `timeCost` that brings you closest to the maximum acceptable delay or target number of authentication attempts per second by running benchmarks.
 6. If `timeCost` is only 1, reduce `spaceCost` to be able to increase `timeCost`. Performing multiple rounds is beneficial for security {{AB17}}.
 
