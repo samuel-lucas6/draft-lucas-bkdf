@@ -1,6 +1,6 @@
 # Balloon Hashing
 
-This is the working area for the individual Internet-Draft, "Balloon Hashing".
+This is the working area for the "Balloon Hashing" Internet-Draft, which specifies the Balloon password hashing and password-based key derivation function.
 
 * [Editor's Copy](https://samuel-lucas6.github.io/draft-lucas-balloon-hashing/#go.draft-lucas-balloon-hashing.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-lucas-balloon-hashing)
