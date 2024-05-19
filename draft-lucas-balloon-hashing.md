@@ -301,7 +301,7 @@ Steps:
 buffer = List(spaceCost, HASH_LEN)
 counter = 0
 
-buffer[0] = Hash(LE64(counter++) || password || salt)
+buffer[0] = Hash(LE64(counter++) || password || salt || LE64(password.Length) || LE64(salt.Length))
 for m = 1 to spaceCost - 1
     buffer[m] = Hash(LE64(counter++) || buffer[m - 1])
 
