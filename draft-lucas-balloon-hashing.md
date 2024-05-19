@@ -181,7 +181,9 @@ Balloon {{BCS16}} is a memory-hard password hashing and password-based key deriv
 - It uses a password-independent memory access pattern, making it resistant to cache-timing attacks. This property is especially relevant in cloud computing environments where multiple users can share the same physical machine.
 - It is easy to implement whilst being fast enough for real-world use.
 
-Unfortunately, the paper did not fully specify the algorithm nor provide guidance on parameters. Therefore, this document aims to rectify the situation based on existing interoperable implementations, real-world password hashing guidance, and research since the paper.
+Unfortunately, the paper did not fully specify the algorithm nor provide guidance on parameters. Furthermore, the algorithm was not designed with key derivation in mind and had multiple variants.
+
+This document rectifies these issues by specifying an encoding, preventing canonicalization attacks, fixing the modulo bias, making delta a constant, treating Balloon and Balloon-M as one algorithm, and adding support for key derivation.
 
 # Conventions and Definitions
 
