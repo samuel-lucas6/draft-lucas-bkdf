@@ -98,60 +98,6 @@ informative:
         org: Microsoft Research
     date: 2016
 
-  SP800-63B:
-    title: "NIST SP 800-63B - Digital Identity Guidelines: Authentication and Lifecycle Management"
-    target: https://doi.org/10.6028/NIST.SP.800-63b
-    author:
-      -
-        ins: P. Grassi
-        name: Paul Grassi
-        org: NIST
-      -
-        ins: E. Newton
-        name: Elaine Newton
-        org: NIST
-      -
-        ins: J. Fenton
-        name: James Fenton
-        org: Altmode Networks
-      -
-        ins: R. Perlner
-        name: Ray Perlner
-        org: NIST
-      -
-        ins: A. Regenscheid
-        name: Andrew Regenscheid
-        org: NIST
-      -
-        ins: W. Burr
-        name: William Burr
-        org: Dakota Consulting
-      -
-        ins: J. Richer
-        name: Justin Richer
-        org: Bespoke Engineering
-      -
-        ins: N. Lefkovitz
-        name: Naomi Lefkovitz
-        org: NIST
-      -
-        ins: J. Danker
-        name: Jamie Danker
-        org: DHS
-      -
-        ins: Y. Choong
-        name: Yee-Yin Choong
-        org: NIST
-      -
-        ins: K. Greene
-        name: Kristen Greene
-        org: NIST
-      -
-        ins: M. Theofanos
-        name: Mary Theofanos
-        org: NIST
-    date: 2017
-
   AB17:
     title: "Towards Practical Attacks on Argon2i and Balloon Hashing"
     rc: "2017 IEEE European Symposium on Security and Privacy (EuroS&P), Paris, France, 2017, pp. 142-157"
@@ -228,7 +174,7 @@ This document describes Balloon, a memory-hard function suitable for password ha
 
 # Introduction
 
-Balloon {{BCS16}} is a memory-hard password hashing and password-based key derivation function that was published shortly after the Password Hashing Competition (PHC), which recommended Argon2 {{?RFC9106}}. It is mentioned in a NIST Special Publication on authentication {{SP800-63B}} and has several advantages over prior password hashing algorithms:
+Balloon {{BCS16}} is a memory-hard password hashing and password-based key derivation function that was published shortly after the Password Hashing Competition (PHC), which recommended Argon2 {{?RFC9106}}. It has several advantages over prior password hashing algorithms:
 
 - It has proven memory-hardness properties, making it resistant against sequential GPU/ASIC attacks. An adversary trying to save space pays a large penalty in computation time.
 - It can be instantiated with any cryptographic hash function or XOF, making it a mode of operation for these existing algorithms. No new, unstudied primitives are required.
