@@ -256,6 +256,7 @@ Operations:
 - `Hash(a)`: collision-resistant hashing of the byte array `a`.
 - `LE64(x)`: the little-endian encoding of unsigned 64-bit integer `x`.
 - `ReadLE64(a)`: the conversion of byte array `a` into an unsigned, little-endian 64-bit integer.
+- `Ceiling(x)`: rounds the integer `x` up to the nearest whole number.
 
 Constants:
 
@@ -268,6 +269,7 @@ Constants:
 - `MAX_TIMECOST`: the maximum time cost, which is 16777215.
 - `MIN_PARALLELISM`: the minimum parallelism, which is 1.
 - `MAX_PARALLELISM`: the maximum parallelism, which is 16777215.
+- `MAX_LENGTH`: the maximum output length, which is 4294967295.
 - `DELTA`: the number of dependencies per block (a security parameter), which is 3.
 
 # The Expand-Mix-Extract (EME) Function
@@ -324,10 +326,10 @@ return buffer[spaceCost - 1]
 # The Balloon Algorithm
 
 ~~~
-Balloon(password, salt, spaceCost, timeCost, parallelism)
+Balloon(password, salt, spaceCost, timeCost, parallelism, length)
 ~~~
 
-A limitation of EME is that it lacks parallelism because the value of each block depends on the value of the previous block. Balloon addresses this by invoking EME in parallel using multiple cores, XORing the outputs, and hashing the password, salt, and XORed output concatenated together. This provides greater memory hardness without increasing the delay.
+A limitation of EME is that it lacks parallelism because the value of each block depends on the value of the previous block. Balloon addresses this by invoking EME in parallel using multiple cores, XORing the outputs, and hashing the password, salt, output length, and XORed output to derive key material. This provides greater memory hardness without increasing the delay.
 
 Inputs:
 
@@ -336,10 +338,11 @@ Inputs:
 - `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST` that is a power of 2. A block is the size of the hash function output length in bytes.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 - `parallelism`: the number of CPU cores/EME calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
+- `length`: the length of the password hash/derived key in bytes, which MUST NOT be greater than `MAX_LENGTH`.
 
 Outputs:
 
-- The password hash/derived key the size of the hash function output length.
+- The password hash/derived key, which is `length` bytes long.
 
 Steps:
 
@@ -354,7 +357,15 @@ foreach output in outputs
     for i = 0 to output.Length - 1
         hash[i] = hash[i] ^ output[i]
 
-return Hash(password || salt || hash)
+key = Hash(hash || password || salt || LE64(length) || LE64(password.Length) || LE64(salt.Length))
+
+counter = 1
+reps = Ceiling(length / HASH_LEN)
+for i = 0 to reps
+	key = Hash(key || LE64(counter++))
+	result = result || key
+
+return result.Slice(0, length)
 ~~~
 
 # Implementation Considerations
@@ -414,12 +425,6 @@ Here is an example encoded hash:
 ~~~
 $balloon-sha-256$v=1$m=1024,t=3,p=0$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GVlnqmNEDfs
 ~~~
-
-# Performing Key Derivation
-
-As Balloon produces outputs the size of the hash function output length, there is a limit on the size of derived keys. To derive larger/multiple keys, the output can be fed into a KDF, like HKDF-Expand {{!RFC5869}}, or an XOF, like SHAKE {{FIPS202}}. In both cases, domain separation SHOULD be specified, such as the protocol/application name and purpose of the derived key.
-
-When the Balloon output is too large, it can be truncated to the required key size by taking the first portion of the output. For example, taking the first 256 bits of a 512-bit output. Alternatively, a KDF or XOF can be used, as discussed above.
 
 # Security Considerations
 
