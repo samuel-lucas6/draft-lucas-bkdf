@@ -376,11 +376,9 @@ $balloon-sha-256$v=1$m=1024,t=3,p=0$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snS
 
 # Security Considerations
 
-Balloon has been proven sequentially memory-hard in the random-oracle model and uses a password-independent memory access pattern to prevent side-channel attacks leaking information about the password {{BCS16}}. However, no function that uses a password-independent memory access pattern can be optimally memory-hard in the parallel setting {{AB16}}. In other words, Balloon is inherently weaker against parallel attacks.
+## Usage Guidelines
 
-To improve Balloon's resistance to parallel attacks, the output can be fed into a password hashing function with a password-dependent memory access pattern, such as scrypt {{?RFC7914}}. The cost of this approach is like increasing the `timeCost` of Balloon {{BCS16}}. However, even this does not defend against an attacker who can both a) obtain memory access pattern information and b) perform a massively parallel attack; it only protects against the two attacks separately.
-
-The security properties of Balloon depend on the chosen collision-resistant hash function/XOF. For example, a 256-bit hash should provide 128-bit collision resistance and 256-bit (second) preimage resistance. Technically, only preimage resistance is required for password hashing to prevent the attacker learning information about the password from the hash. However, non-collision-resistant hash functions (e.g. MD5 {{?RFC6151}} and SHA-1 {{?RFC6194}}) MUST NOT be used. Such functions are cryptographically weak and unsuitable for new protocols.
+Technically, only preimage resistance is required for password hashing to prevent the attacker learning information about the password from the hash. However, non-collision-resistant hash functions (e.g. MD5 {{?RFC6151}} and SHA-1 {{?RFC6194}}) MUST NOT be used. Such functions are cryptographically weak and unsuitable for new protocols.
 
 If possible, store the password in protected memory and/or erase the password from memory once it is no longer required. Otherwise, an attacker may be able to recover the password from memory or the disk.
 
@@ -388,7 +386,7 @@ The salt MUST be unique. It SHOULD be randomly generated using a cryptographical
 
 The `spaceCost`, `timeCost`, and `parallelism` MUST be carefully chosen to avoid denial-of-service and user frustration whilst ensuring adequate protection against password cracking. Similarly, systems MUST check for overly large user-specified parameters (e.g. passwords) to prevent denial-of-service attacks.
 
-Avoid using hardcoded parameters (e.g. `spaceCost`/`timeCost`) when performing password hashing; these SHOULD be stored as part of the password hash, as described in {{encoding-password-hashes}}. With key derivation, hardcoded parameters are acceptable if protocol versioning is used.
+Avoid using hardcoded `spaceCost`/`timeCost`/`parallelism` parameters when performing password hashing; these SHOULD be stored as part of the password hash, as described in {{encoding-password-hashes}}. With key derivation, hardcoded parameters are acceptable if protocol versioning is used.
 
 For password hashing, it is RECOMMENDED to encrypt password hashes using an authenticated encryption with associated data (AEAD) scheme {{?RFC5116}} before storage. This forces an attacker to compromise the key, which is stored separately from the database, as well as the database before they can begin password cracking. If the key is compromised but the database is not, it can be rotated without having to reset any passwords.
 
@@ -396,9 +394,17 @@ For key derivation, one can use a pepper (e.g. a key file) with a keyed hash fun
 
 If performing key derivation for password-based encryption with a non-committing AEAD scheme, be aware of partitioning oracle attacks, which can significantly speed up password guessing {{LGR21}}. These are relevant when a server that knows the key (an oracle) performs password-based decryption for ciphertexts you send and leaks whether decryption was successful (e.g. via an error message or timing side-channel).
 
+## Security Guarantees
+
+The security properties of Balloon depend on the chosen collision-resistant hash function/XOF. For example, a 256-bit hash typically provides 128-bit collision resistance and 256-bit (second) preimage resistance.
+
+Balloon has been proven sequentially memory-hard in the random-oracle model and uses a password-independent memory access pattern to prevent side-channel attacks leaking information about the password {{BCS16}}. However, no function that uses a password-independent memory access pattern can be optimally memory-hard in the parallel setting {{AB16}}. In other words, Balloon is inherently weaker against parallel attacks.
+
+To improve Balloon's resistance to parallel attacks, the output can be fed into a password hashing function with a password-dependent memory access pattern, such as scrypt {{?RFC7914}} or Argon2d {{?RFC9106}}. The cost of this approach is like increasing the `timeCost` of Balloon {{BCS16}}. However, even this does not defend against an attacker who can both a) obtain memory access pattern information and b) perform a massively parallel attack; it only protects against the two attacks separately.
+
 Unlike password hashing algorithms such as bcrypt {{PM99}}, which perform many small pseudorandom reads, Balloon is not cache-hard. Whilst there are no known publications on cache-hardness at the time of writing, it is reported to provide better GPU/ASIC resistance than memory-hardness for shorter delays (e.g. < 1000 ms). In such cases, memory bandwidth and CPU cache sizes are bigger bottlenecks than total memory. This makes cache-hard algorithms ideal for authentication scenarios but potentially less suited for key derivation.
 
-Third-party analysis for Balloon can be found in {{RD16}}, {{AB17}}, {{ABP17}}, and {{RD17}}. However, note that there are multiple versions of Balloon, and none of these papers have analysed the version used in real-world implementations.
+Third-party analysis for Balloon can be found in {{RD16}}, {{AB17}}, {{ABP17}}, and {{RD17}}. However, note that there are multiple versions of Balloon, and none of these papers have analysed the version specified in this document.
 
 # IANA Considerations
 
