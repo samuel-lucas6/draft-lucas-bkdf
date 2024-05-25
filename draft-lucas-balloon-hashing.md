@@ -204,11 +204,12 @@ Operations:
 - `Hash(a)`: collision-resistant hashing of the byte array `a`.
 - `LE64(x)`: the little-endian encoding of unsigned 64-bit integer `x`.
 - `ReadLE64(a)`: the conversion of byte array `a` into an unsigned, little-endian 64-bit integer.
+- `Ceiling(x)`: the integer `x` rounded up to the nearest whole number.
 - `UTF8(s)`: the UTF-8 encoding of string `s`.
-- `Ceiling(x)`: rounds the integer `x` up to the nearest whole number.
 
 Constants:
 
+- `DELTA`: the number of dependencies per block (a security parameter), which is 3.
 - `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this is the minimum output length to obtain the maximum advertised security level. For example, a 256-bit output for an XOF targeting 128-bit security.
 - `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
 - `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
@@ -219,7 +220,6 @@ Constants:
 - `MIN_PARALLELISM`: the minimum parallelism, which is 1.
 - `MAX_PARALLELISM`: the maximum parallelism, which is 16777215.
 - `MAX_LENGTH`: the maximum output length, which is 4294967295.
-- `DELTA`: the number of dependencies per block (a security parameter), which is 3.
 
 # The Expand-Mix-Extract (EME) Function
 
