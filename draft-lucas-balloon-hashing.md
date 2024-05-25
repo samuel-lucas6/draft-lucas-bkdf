@@ -321,13 +321,14 @@ return result.Slice(0, length)
 
 # Implementation Considerations
 
-Whilst the pseudocode uses a list of byte arrays for the buffer, slicing portions of a single large byte array to access/update blocks will likely be more performant.
+There are several ways to optimise the pseudocode, which is written for readability:
 
-Similarly, using a byte array counter instead of an integer that gets repeatedly converted to a byte array will likely aid performance.
-
-The XORing of outputs can be skipped if `parallelism = 1`.
-
-Finally, it is recommended to use an incremental hash function API rather than manually copying byte arrays to concatenate inputs as this is cleaner and may be more efficient.
+- Instead of using a list of byte arrays for the buffer, access portions of a single large byte array.
+- Instead of an integer counter that gets repeatedly converted to a byte array, allocate a byte array once and repeatedly fill that buffer or use a byte array counter.
+- Instead of repeatedly converting `timeCost` and `spaceCost` to bytes in the `DELTA` loop, convert them once in the outer `timeCost` and `spaceCost` loops respectively.
+- Skip the XORing of outputs when `parallelism = 1`.
+- Convert the key derivation domain separation string to bytes once rather than in each iteration of the loop.
+- Use an incremental hash function API rather than manual concatenation.
 
 # Choosing the Hash Function
 
