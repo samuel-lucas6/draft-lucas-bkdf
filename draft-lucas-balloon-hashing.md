@@ -237,7 +237,7 @@ Inputs:
 
 - `password`: the password to be hashed, which MUST NOT be greater than `MAX_PASSWORD` bytes long.
 - `salt`: the unique salt, which MUST NOT be greater than `MAX_SALT` bytes long.
-- `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST` that is a power of 2. A block is the size of the hash function output length in bytes.
+- `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST` that is a power of 2. A block is `HASH_LEN` bytes long.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 - `parallelism`: the number of CPU cores/EME calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
 
@@ -285,7 +285,7 @@ Inputs:
 
 - `password`: the password to be hashed, which MUST NOT be greater than `MAX_PASSWORD` bytes long.
 - `salt`: the unique salt, which MUST NOT be greater than `MAX_SALT` bytes long.
-- `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST` that is a power of 2. A block is the size of the hash function output length in bytes.
+- `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST` that is a power of 2. A block is `HASH_LEN` bytes long.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 - `parallelism`: the number of CPU cores/EME calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
 - `length`: the length of the password hash/derived key in bytes, which MUST NOT be greater than `MAX_LENGTH`.
