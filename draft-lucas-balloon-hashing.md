@@ -183,7 +183,7 @@ Balloon {{BCS16}} is a memory-hard password hashing and password-based key deriv
 
 Unfortunately, the paper did not fully specify the algorithm nor provide guidance on parameters. Furthermore, the algorithm was not designed with key derivation in mind and had multiple variants.
 
-This document rectifies these issues by specifying an encoding, preventing canonicalization attacks, fixing the modulo bias, making delta a constant, treating Balloon and Balloon-M as one algorithm, and adding support for key derivation.
+This document rectifies these issues by specifying an encoding, preventing canonicalization attacks, improving domain separation, fixing the modulo bias, making delta a constant, treating Balloon and Balloon-M as one algorithm, and adding support for key derivation.
 
 # Conventions and Definitions
 
