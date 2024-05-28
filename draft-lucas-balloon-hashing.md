@@ -313,6 +313,7 @@ key = Hash(hash || password || salt || LE64(length) || LE64(password.Length) || 
 counter = 1
 reps = Ceiling(length / HASH_LEN)
 previous = List(1, 0)
+result = List(1, 0)
 for i = 0 to reps
     previous = Hash(key || previous || LE64(counter++) || UTF8("balloon"))
     result = result || previous
