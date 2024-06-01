@@ -347,7 +347,7 @@ The higher the `spaceCost` and `timeCost`, the longer it takes to compute an out
 
 The following procedure can be used to choose parameters:
 
-1. Set the `parallelism` to 1 on a server and 4 otherwise. This assumes most user devices have at least 4 CPU cores.
+1. For performing authentication on a server or running the algorithm on any type of user device, set the `parallelism` to 1. This avoids resource exhaustion attacks and slowdowns on machines with few CPU cores. Otherwise, set it to the maximum number of CPU cores the machine can dedicate to the computation.
 2. Establish the maximum acceptable delay for the user. For example, 100-500 ms for authentication, 250-1000 ms for file encryption, and 1000-5000 ms for disk encryption. On servers, you also need to factor in the maximum number of authentication attempts per second.
 3. Determine the maximum amount of memory available, taking into account different types of user devices and denial-of-service. For instance, mobile phones versus laptops/desktops.
 4. Convert the MiB/GiB memory size that is a power of 2 to bytes. Then set `spaceCost` to `bytes / HASH_LEN`, which is the number of blocks.
