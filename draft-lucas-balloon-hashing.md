@@ -223,7 +223,7 @@ Constants:
 # The Expand-Mix-Extract (EME) Function
 
 ~~~
-EME(password, salt, spaceCost, timeCost, parallelism)
+EME(password, salt, spaceCost, timeCost, parallelism, length)
 ~~~
 
 The EME function can be divided into three steps:
@@ -239,6 +239,7 @@ Inputs:
 - `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST` that is a power of 2. A block is `HASH_LEN` bytes long.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 - `parallelism`: the number of CPU cores/EME calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
+- `length`: the length of the password hash/derived key in bytes, which MUST NOT be greater than `MAX_LENGTH`.
 
 Outputs:
 
@@ -250,7 +251,7 @@ Steps:
 buffer = List(spaceCost, HASH_LEN)
 counter = 0
 
-buffer[0] = Hash(LE64(counter++) || password || salt || LE64(spaceCost) || LE64(timeCost) || LE64(parallelism) || LE64(password.Length) || LE64(salt.Length))
+buffer[0] = Hash(LE64(counter++) || password || salt || LE64(spaceCost) || LE64(timeCost) || LE64(parallelism) || LE64(length) || LE64(password.Length) || LE64(salt.Length))
 for m = 1 to spaceCost - 1
     buffer[m] = Hash(LE64(counter++) || buffer[m - 1])
 
