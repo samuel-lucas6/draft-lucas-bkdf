@@ -388,7 +388,7 @@ Technically, only preimage resistance is required for password hashing to preven
 
 If possible, store the password in protected memory and/or erase the password from memory once it is no longer required. Otherwise, an attacker may be able to recover the password from memory or the disk.
 
-The salt MUST be unique. It SHOULD be randomly generated using a cryptographically secure pseudorandom number generator (CSPRNG). However, it MAY be deterministic and predictable if random generation is not possible. It SHOULD be at least 128 bits long and SHOULD NOT exceed 256 bits.
+The salt MUST be unique each time you call the function unless verifying a password hash or deriving the same key. It SHOULD be randomly generated using a cryptographically secure pseudorandom number generator (CSPRNG). However, it MAY be deterministic and predictable if random generation is not possible. It SHOULD be at least 128 bits long and SHOULD NOT exceed 256 bits.
 
 The `spaceCost`, `timeCost`, and `parallelism` MUST be carefully chosen to avoid denial-of-service and user frustration whilst ensuring adequate protection against password cracking. Similarly, systems MUST check for overly large user-specified parameters (e.g. passwords) to prevent denial-of-service attacks.
 
