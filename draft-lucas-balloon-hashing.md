@@ -209,17 +209,17 @@ Operations:
 
 Constants:
 
-- `DELTA`: the number of dependencies per block (a security parameter), which is 3.
+- `DELTA`: the number of dependencies per block (a security parameter), which is 3 as an integer.
 - `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this is the minimum output length to obtain the maximum advertised security level. For example, a 256-bit output for an XOF targeting 128-bit security.
 - `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
 - `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
-- `MIN_SPACECOST`: the minimum space cost, which is 1.
-- `MAX_SPACECOST`: the maximum space cost, which is 4294967296.
-- `MIN_TIMECOST`: the minimum time cost, which is 1.
-- `MAX_TIMECOST`: the maximum time cost, which is 16777215.
-- `MIN_PARALLELISM`: the minimum parallelism, which is 1.
-- `MAX_PARALLELISM`: the maximum parallelism, which is 16777215.
-- `MAX_LENGTH`: the maximum output length, which is 4294967295.
+- `MIN_SPACECOST`: the minimum space cost, which is 1 as an integer.
+- `MAX_SPACECOST`: the maximum space cost, which is 4294967296 as an integer.
+- `MIN_TIMECOST`: the minimum time cost, which is 1 as an integer.
+- `MAX_TIMECOST`: the maximum time cost, which is 16777215 as an integer.
+- `MIN_PARALLELISM`: the minimum parallelism, which is 1 as an integer.
+- `MAX_PARALLELISM`: the maximum parallelism, which is 16777215 as an integer.
+- `MAX_LENGTH`: the maximum output length, which is 4294967295 as an integer.
 
 # The Expand-Mix-Extract (EME) Function
 
