@@ -209,7 +209,6 @@ Operations:
 
 Constants:
 
-- `DELTA`: the number of dependencies per block (a security parameter), which is 3 as an integer.
 - `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this is the minimum output length to obtain the maximum advertised security level. For example, a 256-bit output for an XOF targeting 128-bit security.
 - `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
 - `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
@@ -230,7 +229,7 @@ EME(password, salt, spaceCost, timeCost, parallelism)
 The EME function can be divided into three steps:
 
 1. Expand: a large buffer is filled with pseudorandom bytes derived by repeatedly hashing the password and salt. This buffer is divided into blocks the size of the hash function output length.
-2. Mix: the buffer is mixed for the number of rounds specified by the user. Each block becomes equal to the hash of the previous block, the current block, and delta other blocks 'pseudorandomly' chosen from the buffer based on the salt.
+2. Mix: the buffer is mixed for the number of rounds specified by the user. Each block becomes equal to the hash of the previous block, the current block, and delta other blocks pseudorandomly chosen from the buffer based on the salt.
 3. Extract: the last block of the buffer is output for key derivation.
 
 Inputs:
@@ -262,13 +261,11 @@ for t = 0 to timeCost - 1
         else
             previous = buffer[m - 1]
 
-        buffer[m] = Hash(LE64(counter++) || previous || buffer[m])
-
-        for i = 0 to DELTA - 1
-            idxBlock = Hash(LE64(t) || LE64(m) || LE64(i))
-            idxBlock = Hash(LE64(counter++) || salt || idxBlock)
-            other = ReadLE64(idxBlock.Slice(0, 8)) % spaceCost
-            buffer[m] = Hash(LE64(counter++) || buffer[m] || buffer[other])
+        pseudorandom = Hash(LE64(counter++) || salt)
+        other1 = ReadLE64(pseudorandom.Slice(0, 8)) % spaceCost
+        other2 = ReadLE64(pseudorandom.Slice(8, 8)) % spaceCost
+        other3 = ReadLE64(pseudorandom.Slice(16, 8)) % spaceCost
+        buffer[m] = Hash(LE64(counter++) || previous || buffer[m] || buffer[other1] || buffer[other2] || buffer[other3])
 
 return buffer[spaceCost - 1]
 ~~~
@@ -327,7 +324,6 @@ There are several ways to optimise the pseudocode, which is written for readabil
 
 - Instead of using a list of byte arrays for the buffer, access portions of a single large byte array.
 - Instead of an integer counter that gets repeatedly converted to a byte array, allocate a byte array once and repeatedly fill that buffer or use a byte array counter.
-- Instead of repeatedly converting `timeCost` and `spaceCost` to bytes in the `DELTA` loop, convert them once in the outer `timeCost` and `spaceCost` loops respectively.
 - Skip the XORing of outputs when `parallelism = 1`.
 - Convert the key derivation domain separation string to bytes once rather than in each iteration of the loop.
 - Use an incremental hash function API rather than manual concatenation.
