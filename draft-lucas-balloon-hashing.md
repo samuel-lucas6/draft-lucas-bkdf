@@ -230,7 +230,7 @@ EME(password, salt, spaceCost, timeCost, parallelism)
 The EME function can be divided into three steps:
 
 1. Expand: a large buffer is filled with pseudorandom bytes derived by repeatedly hashing the password and salt. This buffer is divided into blocks the size of the hash function output length.
-2. Mix: the buffer is mixed for the number of rounds specified by the user. Each block becomes equal to the hash of the previous block, the current block, and delta other blocks 'randomly' chosen from the buffer based on the salt.
+2. Mix: the buffer is mixed for the number of rounds specified by the user. Each block becomes equal to the hash of the previous block, the current block, and delta other blocks 'pseudorandomly' chosen from the buffer based on the salt.
 3. Extract: the last block of the buffer is output as the password hash/derived key.
 
 Inputs:
