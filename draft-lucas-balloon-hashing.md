@@ -249,8 +249,7 @@ Steps:
 outputs = List(parallelism, HASH_LEN)
 
 parallel for i = 0 to parallelism - 1
-    newSalt = salt || LE64(i + 1)
-    outputs[i] = BalloonCore(password, newSalt, spaceCost, timeCost)
+    outputs[i] = BalloonCore(password, salt, spaceCost, timeCost, parallelism, length, i + 1)
 
 hash = List(1, HASH_LEN)
 foreach output in outputs
@@ -273,7 +272,7 @@ return result.Slice(0, length)
 # The BalloonCore Function
 
 ~~~
-BalloonCore(password, salt, spaceCost, timeCost, parallelism, length)
+BalloonCore(password, salt, spaceCost, timeCost, parallelism, length, iteration)
 ~~~
 
 The BalloonCore function is the internal function used by Balloon for memory hardness. It can be divided into three steps:
@@ -290,6 +289,7 @@ Inputs:
 - `timeCost`: the time cost provided to the Balloon algorithm.
 - `parallelism`: the parallelism provided to the Balloon algorithm.
 - `length`: the length provided to the Balloon algorithm.
+- `iteration`: the parallelism loop iteration from the Balloon algorithm.
 
 Outputs:
 
@@ -301,7 +301,7 @@ Steps:
 buffer = List(spaceCost, HASH_LEN)
 counter = 0
 
-buffer[0] = Hash(LE64(counter++) || password || salt || LE64(spaceCost) || LE64(timeCost) || LE64(parallelism) || LE64(length) || LE64(password.Length) || LE64(salt.Length))
+buffer[0] = Hash(LE64(counter++) || password || salt || LE64(spaceCost) || LE64(timeCost) || LE64(parallelism) || LE64(length) || LE64(iteration) || LE64(password.Length) || LE64(salt.Length))
 for m = 1 to spaceCost - 1
     buffer[m] = Hash(LE64(counter++) || buffer[m - 1])
 
