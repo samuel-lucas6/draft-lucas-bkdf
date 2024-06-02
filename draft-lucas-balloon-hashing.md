@@ -248,7 +248,7 @@ outputs = List(parallelism, HASH_LEN)
 
 parallel for i = 0 to parallelism - 1
     newSalt = salt || LE64(i + 1)
-    outputs[i] = EME(password, newSalt, spaceCost, timeCost)
+    outputs[i] = BalloonCore(password, newSalt, spaceCost, timeCost)
 
 hash = List(1, HASH_LEN)
 foreach output in outputs
@@ -268,13 +268,13 @@ for i = 0 to reps
 return result.Slice(0, length)
 ~~~
 
-# The Expand-Mix-Extract (EME) Function
+# The BalloonCore Function
 
 ~~~
-EME(password, salt, spaceCost, timeCost, parallelism, length)
+BalloonCore(password, salt, spaceCost, timeCost, parallelism, length)
 ~~~
 
-The EME function is the internal function used by Balloon for memory hardness. It can be divided into three steps:
+The BalloonCore function is the internal function used by Balloon for memory hardness. It can be divided into three steps:
 
 1. Expand: a large buffer is filled with pseudorandom bytes derived by repeatedly hashing the user provided parameters. This buffer is divided into blocks the size of the hash function output length.
 2. Mix: the buffer is mixed for the number of rounds specified by the user. Each block becomes equal to the hash of the previous block, the current block, and delta other blocks pseudorandomly chosen from the buffer based on the salt.
@@ -367,7 +367,7 @@ $balloon-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
 - `v=version`: this is version 2 of Balloon. If the design is modified, the version will be incremented.
 - `m=spaceCost`: the memory size in blocks, not KiB.
 - `t=timeCost`: the number of rounds.
-- `p=parallelism`: the number of CPU cores/EME calls in parallel.
+- `p=parallelism`: the number of CPU cores/internal function calls in parallel.
 - `salt`: the salt encoded in Base64 with no padding {{!RFC4648}}.
 - `hash`: the full/untruncated Balloon output encoded in Base64 with no padding {{!RFC4648}}.
 
@@ -416,50 +416,6 @@ This document has no IANA actions.
 --- back
 
 # Test Vectors
-
-## EME-SHA-256
-
-### Test Vector 1
-
-~~~
-password: 70617373776f7264
-
-salt: 73616c74
-
-spaceCost: 1
-
-timeCost: 1
-
-hash: eefda4a8a75b461fa389c1dcfaf3e9dfacbc26f81f22e6f280d15cc18c417545
-~~~
-
-### Test Vector 2
-
-~~~
-password: 68756e7465723432
-
-salt: 6578616d706c6573616c74
-
-spaceCost: 1024
-
-timeCost: 3
-
-hash: 716043dff777b44aa7b88dcbab12c078abecfac9d289c5b5195967aa63440dfb
-~~~
-
-### Test Vector 3
-
-~~~
-password: 70617373776f7264
-
-salt:
-
-spaceCost: 3
-
-timeCost: 3
-
-hash: 20aa99d7fe3f4df4bd98c655c5480ec98b143107a331fd491deda885c4d6a6cc
-~~~
 
 ## Balloon-SHA-256
 
