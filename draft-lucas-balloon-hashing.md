@@ -366,7 +366,7 @@ To store Balloon hashes in a database as strings, the following format SHOULD be
 $balloon-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
 ~~~
 
-- `balloon-hash`: where `hash` is the proper, correctly punctuated name of the hash function in lowercase. For example, `sha-256`, not `sha256`. Another example is `sha3-256`, not `sha3256` or `sha-3-256`. Finally, `sha-512-256` for SHA-512 truncated to 256 bits, and `sha-512/256` for the SHA-512/256 algorithm.
+- `balloon-hash`: where `hash` is the official hash function/XOF OID minus any prefix (e.g. `id-`). For example, `blake2b512` for BLAKE2b-512 {{!RFC7693}}.
 - `v=version`: this is version 2 of Balloon. If the design is modified, the version will be incremented.
 - `m=spaceCost`: the memory size in blocks, not KiB.
 - `t=timeCost`: the number of rounds.
