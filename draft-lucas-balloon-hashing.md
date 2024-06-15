@@ -147,25 +147,6 @@ informative:
         org: Massachusetts Institute of Technology
     date: 2017
 
-  LGR21:
-    title: "Partitioning Oracle Attacks"
-    rc: "30th USENIX Security Symposium (USENIX Security 21), pp. 195–212"
-    target: https://www.usenix.org/conference/usenixsecurity21/presentation/len
-    author:
-      -
-        ins: J. Len
-        name: Julia Len
-        org: Cornell Tech
-      -
-        ins: P. Grubbs
-        name: Paul Grubbs
-        org: Cornell Tech
-      -
-        ins: T. Ristenpart
-        name: Thomas Ristenpart
-        org: Cornell Tech
-    date: 2021
-
 --- abstract
 
 This document describes Balloon, a memory-hard function suitable for password hashing and password-based key derivation. It has proven memory-hardness properties, is built from any standard cryptographic hash function or extendable-output function (XOF), is resistant to cache-timing attacks, and is easy to implement whilst remaining performant.
@@ -397,8 +378,6 @@ Avoid using hardcoded `spaceCost`/`timeCost`/`parallelism` parameters when perfo
 For password hashing, it is RECOMMENDED to encrypt password hashes using an authenticated encryption with associated data (AEAD) scheme {{?RFC5116}} before storage. This forces an attacker to compromise the key, which is stored separately from the database, as well as the database before they can begin password cracking. If the key is compromised but the database is not, it can be rotated without having to reset any passwords.
 
 For key derivation, one can use a pepper (e.g. a key file) with a keyed hash function, like HMAC {{?RFC2104}}, on the password prior to calling Balloon for additional security. It is RECOMMENDED to use a 256-bit pepper.
-
-If performing key derivation for password-based encryption with a non-committing AEAD scheme, be aware of partitioning oracle attacks, which can significantly speed up password guessing {{LGR21}}. These are relevant when a server that knows the key (an oracle) performs password-based decryption for ciphertexts you send and leaks whether decryption was successful (e.g. via an error message or timing side-channel).
 
 ## Security Guarantees
 
