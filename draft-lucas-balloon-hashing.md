@@ -182,7 +182,7 @@ Operations:
 - `a.Length`: the length of `a` in bytes.
 - `a.Slice(i, l)`: the copy of `l` bytes from byte array `a`, starting at index `i`.
 - `List(i, l)`: the creation of a new list containing `i` byte arrays, each with length `l`.
-- `PRF(k, m)`: the output of a collision-resistant PRF (e.g. HMAC {{!RFC2104}}) with key `k` and message `m`, both byte arrays. To use a collision-resistant hash/XOF with no key parameter (e.g. SHA-512 {{!RFC6234}}), you MUST perform prefix MAC and pad the key with zeros to the block size.
+- `PRF(k, m)`: the output of a collision-resistant PRF (e.g. HMAC {{!RFC2104}}) with key `k` and message `m`, both byte arrays. To use a collision-resistant hash function with no key parameter (e.g. SHA-512 {{!RFC6234}}), you MUST perform prefix MAC and pad the key with zeros to the block size.
 - `LE64(x)`: the little-endian encoding of unsigned 64-bit integer `x`.
 - `ReadLE64(a)`: the conversion of byte array `a` into an unsigned, little-endian 64-bit integer.
 - `ZeroPad(a, n)`: byte array `a` padded with zeros until it is `n` bytes long.
@@ -316,12 +316,12 @@ There are several ways to optimise the pseudocode, which is written for readabil
 
 # Choosing the Hash Function
 
-The choice of cryptographic hash function/XOF affects the performance and security of Balloon in two ways:
+The choice of cryptographic hash function affects the performance and security of Balloon in two ways:
 
 1. For the same parameters, the attacker has an advantage if the algorithm is faster in hardware versus software. They will be able to do the computation in less time than the defender.
-2. For the same delay, the defender will be forced to use smaller parameters with a slower cryptographic hash function/XOF in software. Using a faster algorithm in software means stronger parameters can be used.
+2. For the same delay, the defender will be forced to use smaller parameters with a slower cryptographic hash function in software. Using a faster algorithm in software means stronger parameters can be used.
 
-It is RECOMMENDED to use a cryptographic hash function/XOF that is fast in software but relatively slow in hardware, such as BLAKE2b {{!RFC7693}}. As another example, SHA-512 is preferable to SHA-256 {{!RFC6234}}. Finally, SHA-3 {{FIPS202}} is NOT RECOMMENDED as it is slower in software compared to in hardware.
+It is RECOMMENDED to use a cryptographic hash function that is fast in software but relatively slow in hardware, such as BLAKE2b {{!RFC7693}}. As another example, SHA-512 is preferable to SHA-256 {{!RFC6234}}. Finally, SHA-3 {{FIPS202}} is NOT RECOMMENDED as it is slower in software compared to in hardware.
 
 # Choosing the Parameters
 
@@ -350,7 +350,7 @@ To store Balloon hashes in a database as strings, the following format SHOULD be
 $balloon-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
 ~~~
 
-- `balloon-hash`: where `hash` is the official hash function/XOF OID minus any prefix (e.g. `id-`). For example, `blake2b512` for BLAKE2b-512 {{!RFC7693}}.
+- `balloon-hash`: where `hash` is the official hash function OID minus any prefix (e.g. `id-`). For example, `blake2b512` for BLAKE2b-512 {{!RFC7693}}.
 - `v=version`: this is version 2 of Balloon. If the design is modified, the version will be incremented.
 - `m=spaceCost`: the memory size in blocks, not KiB.
 - `t=timeCost`: the number of rounds.
@@ -384,7 +384,7 @@ For key derivation, one can use a pepper (e.g. a key file) with a keyed hash fun
 
 ## Security Guarantees
 
-The security properties of Balloon depend on the chosen collision-resistant hash function/XOF. For example, a 256-bit hash typically provides 128-bit collision resistance and 256-bit (second) preimage resistance.
+The security properties of Balloon depend on the chosen collision-resistant hash function. For example, a 256-bit hash typically provides 128-bit collision resistance and 256-bit (second) preimage resistance.
 
 Balloon has been proven sequentially memory-hard in the random-oracle model and uses a password-independent memory access pattern to prevent side-channel attacks leaking information about the password {{BCS16}}. However, no function that uses a password-independent memory access pattern can be optimally memory-hard in the parallel setting {{AB16}}. In other words, Balloon is inherently weaker against parallel attacks.
 
