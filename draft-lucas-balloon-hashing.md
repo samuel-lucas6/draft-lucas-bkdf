@@ -306,8 +306,10 @@ There are several ways to optimise the pseudocode, which is written for readabil
 
 - Instead of using a list of byte arrays for the buffer, access portions of a single large byte array.
 - Instead of an integer counter that gets repeatedly converted to a byte array, allocate a byte array once and repeatedly fill that buffer or use a byte array counter.
+- Instead of `x % spaceCost`, one can do `x & (spaceCost - 1)` because `spaceCost` is a power of 2.
 - Skip the XORing of outputs when `parallelism = 1`.
 - Create a single buffer full of zeros for the key derivation padding rather than padding the two variables separately.
+- Instead of `Ceiling(length / HASH_LEN)`, one can do `(length + HASH_LEN - 1) / HASH_LEN`.
 - Convert the key derivation domain separation string to bytes once rather than in each iteration of the loop.
 - Use an incremental hash function API rather than manual concatenation.
 
