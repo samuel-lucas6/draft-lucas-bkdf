@@ -340,7 +340,7 @@ Regrettably, Balloon has not yet been sufficiently investigated for generic para
 
 In all cases, it is RECOMMENDED to use a 128- or 256-bit `salt`. Other `salt` lengths SHOULD NOT be used, and the `salt` length SHOULD NOT vary in your protocol/application. See {{security-considerations}} for guidance on generating the `salt`.
 
-For password hashing, it is RECOMMENDED to use a `length` of 256 bits. For key derivation, it is RECOMMENDED to use a `length` of at least 128 bits.
+For password hashing, it is RECOMMENDED to use a `length` of 128 or 256 bits. For key derivation, it is RECOMMENDED to use a `length` of at least 128 bits.
 
 # Encoding Password Hashes
 
