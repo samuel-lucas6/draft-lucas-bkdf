@@ -473,4 +473,4 @@ hash: f8767fe04059cef67b4427cda99bf8bcdd983959dbd399a5e63ea04523716c23
 
 The original version of Balloon was designed by Dan Boneh, Henry Corrigan-Gibbs, and Stuart Schechter.
 
-Thank you to Henry Corrigan-Gibbs for his helpful comments.
+Thank you to Henry Corrigan-Gibbs and Steve Thomas for their help with the new design and feedback on this document.
