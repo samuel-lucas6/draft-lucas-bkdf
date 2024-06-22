@@ -178,10 +178,11 @@ Operations:
 - `a ^ b`: the bitwise XOR of `a` and `b`.
 - `a % b`: the remainder when dividing `a` by `b`.
 - `a || b`: the concatenation of `a` and `b`.
-- `a[i]`: index `i` of byte array/list `a`.
+- `a[i]`: index `i` of array `a`.
 - `a.Length`: the length of `a` in bytes.
 - `a.Slice(i, l)`: the copy of `l` bytes from byte array `a`, starting at index `i`.
-- `List(i, l)`: the creation of a new list containing `i` byte arrays, each with length `l`.
+- `ByteArray(l)`: the creation of a new byte array with length `l`.
+- `BlockArray(i, l)`: the creation of a new array of arrays containing `i` byte arrays, each with length `l`.
 - `PRF(k, m)`: the output of a collision-resistant PRF (e.g. HMAC {{!RFC2104}}) with key `k` and message `m`, both byte arrays. To use a collision-resistant hash function with no key parameter (e.g. SHA-512 {{!RFC6234}}), you MUST perform prefix MAC and pad the key with zeros to the block size.
 - `LE64(x)`: the little-endian encoding of unsigned 64-bit integer `x`.
 - `ReadLE64(a)`: the conversion of byte array `a` into an unsigned, little-endian 64-bit integer.
@@ -226,23 +227,23 @@ Outputs:
 Steps:
 
 ~~~
-outputs = List(parallelism, HASH_LEN)
+outputs = BlockArray(parallelism, HASH_LEN)
 
-key = List(1, 0)
+key = ByteArray(0)
 key = PRF(ZeroPad(key, HASH_LEN), password || salt || LE64(password.Length) || LE64(salt.Length))
 
 parallel for i = 0 to parallelism - 1
     outputs[i] = BalloonCore(key, salt, spaceCost, timeCost, parallelism, length, i + 1)
 
-hash = List(1, HASH_LEN)
+hash = ByteArray(HASH_LEN)
 foreach output in outputs
     for i = 0 to output.Length - 1
         hash[i] = hash[i] ^ output[i]
 
 counter = 1
 reps = Ceiling(length / HASH_LEN)
-previous = List(1, 0)
-result = List(1, 0)
+previous = ByteArray(0)
+result = ByteArray(0)
 for i = 0 to reps
     previous = PRF(key, previous || LE64(counter++) || UTF8("balloon") || hash)
     result = result || previous
@@ -279,14 +280,14 @@ Outputs:
 Steps:
 
 ~~~
-buffer = List(spaceCost, HASH_LEN)
+buffer = BlockArray(spaceCost, HASH_LEN)
 counter = 0
 
 buffer[0] = PRF(key, LE64(counter++) || LE64(spaceCost) || LE64(timeCost) || LE64(parallelism) || LE64(length) || LE64(iteration))
 for m = 1 to spaceCost - 1
     buffer[m] = PRF(key, LE64(counter++) || buffer[m - 1])
 
-emptyKey = List(1, 0)
+emptyKey = ByteArray(0)
 previous = buffer[spaceCost - 1]
 for t = 0 to timeCost - 1
     for m = 0 to spaceCost - 1
@@ -304,7 +305,7 @@ return previous
 
 There are several ways to optimise the pseudocode, which is written for readability:
 
-- Instead of using a list of byte arrays for the buffer, access portions of a single large byte array.
+- Instead of using an array of byte arrays for the buffer, access portions of a single large byte array.
 - Instead of an integer counter that gets repeatedly converted to a byte array, allocate a byte array once and repeatedly fill that buffer or use a byte array counter.
 - Instead of `x % spaceCost`, one can do `x & (spaceCost - 1)` because `spaceCost` is a power of 2.
 - Skip the XORing of outputs when `parallelism = 1`.
