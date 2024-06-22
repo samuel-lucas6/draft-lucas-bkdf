@@ -186,7 +186,7 @@ Operations:
 - `LE64(x)`: the little-endian encoding of unsigned 64-bit integer `x`.
 - `ReadLE64(a)`: the conversion of byte array `a` into an unsigned, little-endian 64-bit integer.
 - `ZeroPad(a, n)`: byte array `a` padded with zeros until it is `n` bytes long.
-- `Ceiling(x)`: the integer `x` rounded up to the nearest whole number.
+- `Ceiling(x)`: the floating point `x` rounded up to the nearest whole number.
 - `UTF8(s)`: the UTF-8 encoding of string `s`.
 
 Constants:
