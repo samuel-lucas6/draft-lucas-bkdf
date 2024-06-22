@@ -361,7 +361,7 @@ $balloon-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
 Here is an example encoded hash:
 
 ~~~
-$balloon-sha-256$v=1$m=1024,t=3,p=0$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GVlnqmNEDfs
+$balloon-sha256$v=1$m=1024,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GVlnqmNEDfs
 ~~~
 
 # Security Considerations
