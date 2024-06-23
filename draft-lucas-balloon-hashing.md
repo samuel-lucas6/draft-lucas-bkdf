@@ -202,11 +202,12 @@ Constants:
 - `MIN_PARALLELISM`: the minimum parallelism, which is 1 as an integer.
 - `MAX_PARALLELISM`: the maximum parallelism, which is 16777215 as an integer.
 - `MAX_LENGTH`: the maximum output length, which is 4294967295 as an integer.
+- `MAX_PEPPER`: the maximum pepper length, which is 64 bytes.
 
 # The Balloon Algorithm
 
 ~~~
-Balloon(password, salt, spaceCost, timeCost, parallelism, length)
+Balloon(password, salt, spaceCost, timeCost, parallelism, length, pepper)
 ~~~
 
 Balloon calls an internal function that provides memory hardness in a way that supports parallelism, which enables greater memory hardness without increasing the delay. The result of XORing the internal function outputs together is then used alongside user provided parameters for key derivation following the Extract-then-Expand paradigm.
@@ -219,6 +220,7 @@ Inputs:
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 - `parallelism`: the number of CPU cores/internal function calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
 - `length`: the length of the password hash/derived key in bytes, which MUST NOT be greater than `MAX_LENGTH`.
+- `pepper`: an optional secret key, which MUST NOT be greater than `MAX_PEPPER` bytes long.
 
 Outputs:
 
@@ -229,8 +231,11 @@ Steps:
 ~~~
 outputs = BlockArray(parallelism, HASH_LEN)
 
-key = ByteArray(0)
-key = PRF(ZeroPad(key, HASH_LEN), password || salt || LE64(password.Length) || LE64(salt.Length))
+if pepper.Length == 0
+    key = ZeroPad(ByteArray(0), HASH_LEN)
+else
+    key = pepper
+key = PRF(key, password || salt || LE64(password.Length) || LE64(salt.Length))
 
 parallel for i = 0 to parallelism - 1
     outputs[i] = BalloonCore(key, salt, spaceCost, timeCost, parallelism, length, i + 1)
@@ -382,7 +387,7 @@ Avoid using hardcoded `spaceCost`/`timeCost`/`parallelism` parameters when perfo
 
 For password hashing, it is RECOMMENDED to encrypt password hashes using an authenticated encryption with associated data (AEAD) scheme {{?RFC5116}} before storage. This forces an attacker to compromise the key, which is stored separately from the database, as well as the database before they can begin password cracking. If the key is compromised but the database is not, it can be rotated without having to reset any passwords.
 
-For key derivation, one can use a pepper (e.g. a key file) with a keyed hash function, like HMAC {{!RFC2104}}, on the password prior to calling Balloon for additional security. It is RECOMMENDED to use a 256-bit pepper.
+For key derivation, one can feed a secret key into the `pepper` parameter for additional security. This forces an attacker to compromise the pepper before they can guess the password. It is RECOMMENDED to use a 256-bit pepper.
 
 ## Security Guarantees
 
