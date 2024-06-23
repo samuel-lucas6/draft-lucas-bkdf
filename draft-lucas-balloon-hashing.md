@@ -183,7 +183,7 @@ Operations:
 - `a.Slice(i, l)`: the copy of `l` bytes from byte array `a`, starting at index `i`.
 - `ByteArray(l)`: the creation of a new byte array with length `l`.
 - `BlockArray(i, l)`: the creation of a new array of arrays containing `i` byte arrays, each with length `l`.
-- `PRF(k, m)`: the output of a collision-resistant PRF (e.g. HMAC {{!RFC2104}}) with key `k` and message `m`, both byte arrays. To use a collision-resistant hash function with no key parameter (e.g. SHA-512 {{!RFC6234}}), you MUST perform prefix MAC and pad the key with zeros to the block size.
+- `PRF(k, m)`: the output of a collision-resistant PRF (e.g. HMAC-SHA512 {{!RFC2104}}) with key `k` and message `m`, both byte arrays. To use a collision-resistant hash function with no key parameter (e.g. SHA-512 {{!RFC6234}}), you MUST perform prefix MAC and pad the key with zeros to the block size.
 - `LE64(x)`: the little-endian encoding of unsigned 64-bit integer `x`.
 - `ReadLE64(a)`: the conversion of byte array `a` into an unsigned, little-endian 64-bit integer.
 - `ZeroPad(a, n)`: byte array `a` padded with zeros until it is `n` bytes long.
