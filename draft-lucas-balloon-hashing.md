@@ -238,7 +238,7 @@ else
 key = PRF(key, password || salt || LE64(password.Length) || LE64(salt.Length))
 
 parallel for i = 0 to parallelism - 1
-    outputs[i] = BalloonCore(key, salt, spaceCost, timeCost, parallelism, length, i + 1)
+    outputs[i] = BalloonCore(key, spaceCost, timeCost, parallelism, i + 1)
 
 hash = ByteArray(HASH_LEN)
 foreach output in outputs
@@ -259,23 +259,21 @@ return result.Slice(0, length)
 # The BalloonCore Function
 
 ~~~
-BalloonCore(key, salt, spaceCost, timeCost, parallelism, length, iteration)
+BalloonCore(key, spaceCost, timeCost, parallelism, iteration)
 ~~~
 
 The BalloonCore function is the internal function used by Balloon for memory hardness. It can be divided into three steps:
 
 1. Expand: a large buffer is filled with pseudorandom bytes derived by repeatedly hashing the user provided parameters. This buffer is divided into blocks the size of the hash function output length.
-2. Mix: the buffer is mixed for the number of rounds specified by the user. Each block becomes equal to the hash of the previous block, the current block, and delta other blocks pseudorandomly chosen from the buffer based on the salt.
+2. Mix: the buffer is mixed for the number of rounds specified by the user. Each block becomes equal to the hash of the previous block, the current block, and delta other blocks pseudorandomly chosen from the buffer.
 3. Extract: the last block of the buffer is output for key derivation.
 
 Inputs:
 
 - `key`: the key from the Balloon algorithm.
-- `salt`: the salt provided to the Balloon algorithm.
 - `spaceCost`: the space cost provided to the Balloon algorithm.
 - `timeCost`: the time cost provided to the Balloon algorithm.
 - `parallelism`: the parallelism provided to the Balloon algorithm.
-- `length`: the length provided to the Balloon algorithm.
 - `iteration`: the parallelism loop iteration from the Balloon algorithm.
 
 Outputs:
@@ -296,7 +294,7 @@ emptyKey = ByteArray(0)
 previous = buffer[spaceCost - 1]
 for t = 0 to timeCost - 1
     for m = 0 to spaceCost - 1
-        pseudorandom = PRF(ZeroPad(emptyKey, HASH_LEN), LE64(counter++) || LE64(iteration) || salt)
+        pseudorandom = PRF(ZeroPad(emptyKey, HASH_LEN), LE64(counter++) || LE64(spaceCost) || LE64(timeCost) || LE64(parallelism) || LE64(iteration))
         other1 = ReadLE64(pseudorandom.Slice(0, 8)) % spaceCost
         other2 = ReadLE64(pseudorandom.Slice(8, 8)) % spaceCost
         other3 = ReadLE64(pseudorandom.Slice(16, 8)) % spaceCost
