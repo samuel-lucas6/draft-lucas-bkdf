@@ -288,7 +288,7 @@ Steps:
 buffer = BlockArray(spaceCost, HASH_LEN)
 counter = 0
 
-buffer[0] = PRF(key, LE64(counter++) || LE64(spaceCost) || LE64(timeCost) || LE64(parallelism) || LE64(length) || LE64(iteration))
+buffer[0] = PRF(key, LE64(counter++) || LE64(spaceCost) || LE64(timeCost) || LE64(parallelism) || LE64(iteration))
 for m = 1 to spaceCost - 1
     buffer[m] = PRF(key, LE64(counter++) || buffer[m - 1])
 
