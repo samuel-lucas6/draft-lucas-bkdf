@@ -383,7 +383,7 @@ If you want to derive multiple keys (e.g. for encryption and authentication), yo
 
 Avoid using hardcoded `spaceCost`/`timeCost`/`parallelism` parameters when performing password hashing; these SHOULD be stored as part of the password hash, as described in {{encoding-password-hashes}}. With key derivation, hardcoded parameters are acceptable if protocol versioning is used.
 
-For password hashing, it is RECOMMENDED to encrypt password hashes using an authenticated encryption with associated data (AEAD) scheme {{?RFC5116}} before storage. This forces an attacker to compromise the key, which is stored separately from the database, as well as the database before they can begin password cracking. If the key is compromised but the database is not, it can be rotated without having to reset any passwords.
+For password hashing, it is RECOMMENDED to encrypt password hashes using an unauthenticated encryption algorithm or an authenticated encryption with associated data (AEAD) scheme {{?RFC5116}} before storage. This forces an attacker to compromise the key, which is stored separately from the database, as well as the database before they can begin password cracking. If the key is compromised but the database is not, it can be rotated without having to reset any passwords.
 
 For key derivation, one can feed a secret key into the `pepper` parameter for additional security. This forces an attacker to compromise the pepper before they can guess the password. It is RECOMMENDED to use a 256-bit pepper.
 
