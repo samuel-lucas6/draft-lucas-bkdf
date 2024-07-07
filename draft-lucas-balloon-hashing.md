@@ -339,7 +339,10 @@ The following procedure can be used to choose parameters:
 5. Find the `timeCost` that brings you closest to the maximum acceptable delay or target number of authentication attempts per second by running benchmarks.
 6. If `timeCost` is only 1, reduce `spaceCost` to be able to increase `timeCost`. Performing multiple rounds is beneficial for security {{AB17}}.
 
-Regrettably, Balloon has not yet been sufficiently investigated for generic parameter recommendations to be made. This is also difficult given how various cryptographic hash functions can be used.
+To cause an attacker to get < 10 kH/s on an RTX 4080 Super GPU, the parameters must be at least one of the following when using SHA-256 or SHA-512 as the collision-resistant PRF:
+
+- SHA-256: `m=256 KiB, t=48`; `m=512 KiB, t=24`; `m=1 MiB, t=12`; `m=2 MiB, t=6`
+- SHA-512: `m=256 KiB, t=34`; `m=512 KiB, t=17`; `m=1 MiB, t=9`; `m=2 MiB, t=4`
 
 In all cases, it is RECOMMENDED to use a 128- or 256-bit `salt`. Other `salt` lengths SHOULD NOT be used, and the `salt` length SHOULD NOT vary in your protocol/application. See {{security-considerations}} for guidance on generating the `salt`.
 
