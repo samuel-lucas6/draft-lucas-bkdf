@@ -344,7 +344,7 @@ To cause an attacker to get < 10 kH/s on an RTX 4080 Super GPU, the parameters m
 - SHA-256: `m=256 KiB, t=48`; `m=512 KiB, t=24`; `m=1 MiB, t=12`; `m=2 MiB, t=6`
 - SHA-512: `m=256 KiB, t=34`; `m=512 KiB, t=17`; `m=1 MiB, t=9`; `m=2 MiB, t=4`
 
-In all cases, it is RECOMMENDED to use a 128- or 256-bit `salt`. Other `salt` lengths SHOULD NOT be used, and the `salt` length SHOULD NOT vary in your protocol/application. See {{security-considerations}} for guidance on generating the `salt`.
+In all cases, it is RECOMMENDED to use a 128- or 256-bit `salt`. However, a 64-bit `salt` MAY be used if there are storage constraints. Regardless, the `salt` length SHOULD NOT vary in your protocol/application. See {{security-considerations}} for guidance on generating the `salt`.
 
 For password hashing, it is RECOMMENDED to use a `length` of 128 or 256 bits. For key derivation, it is RECOMMENDED to use a `length` of at least 128 bits.
 
