@@ -1,6 +1,6 @@
 ---
 title: "Balloon Key Derivation Function (BKDF)"
-docname: draft-lucas-balloon-hashing-latest
+docname: draft-lucas-bkdf-latest
 category: info
 
 ipr: trust200902
@@ -12,8 +12,8 @@ smart_quotes: yes
 pi: [toc, sortrefs, symrefs]
 
 venue:
-  github: "samuel-lucas6/draft-lucas-balloon-hashing"
-  latest: "https://samuel-lucas6.github.io/draft-lucas-balloon-hashing/draft-lucas-balloon-hashing.html"
+  github: "samuel-lucas6/draft-lucas-bkdf"
+  latest: "https://samuel-lucas6.github.io/draft-lucas-bkdf/draft-lucas-bkdf.html"
 
 author:
  -
