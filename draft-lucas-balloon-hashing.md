@@ -1,5 +1,5 @@
 ---
-title: "Balloon Hashing"
+title: "Balloon Key Derivation Function (BKDF)"
 docname: draft-lucas-balloon-hashing-latest
 category: info
 
@@ -149,22 +149,22 @@ informative:
 
 --- abstract
 
-This document describes Balloon, a memory-hard function suitable for password hashing and password-based key derivation. It has proven memory-hardness properties, is resistant to cache-timing attacks, is easy to implement, and is built from any collision-resistant pseudorandom function (PRF), hash function, or extendable-output function (XOF).
+This document describes the Balloon key derivation function (BKDF), a memory-hard function suitable for password hashing and password-based key derivation. It has proven memory-hardness properties, is resistant to cache-timing attacks, is easy to implement, and is built from any collision-resistant pseudorandom function (PRF), hash function, or extendable-output function (XOF).
 
 --- middle
 
 # Introduction
 
-Balloon {{BCS16}} is a memory-hard password hashing and password-based key derivation function that was published shortly after the Password Hashing Competition (PHC), which recommended Argon2 {{?RFC9106}}. It has several advantages over prior password hashing algorithms:
+BKDF is a memory-hard password hashing and password-based key derivation function based on Balloon {{BCS16}}, which was published shortly after the Password Hashing Competition (PHC). It has several advantages over prior password hashing algorithms:
 
 - It has proven memory-hardness properties, making it resistant against sequential GPU/ASIC attacks. An adversary trying to save space pays a large penalty in computation time.
 - It can be instantiated with any collision-resistant PRF, hash function, or XOF, making it a mode of operation for these existing algorithms. No new, unstudied primitives are required.
 - It uses a password-independent memory access pattern, making it resistant to cache-timing attacks. This property is especially relevant in cloud computing environments where multiple users can share the same physical machine.
 - It is intuitive to understand and easy to implement, which reduces the risk of implementation mistakes.
 
-Unfortunately, the paper did not fully specify the algorithm nor provide guidance on parameters. Furthermore, the algorithm was not designed with key derivation in mind and had multiple variants.
+BKDF exists because the Balloon paper does not fully specify the algorithm, the algorithm was not designed with key derivation in mind, and there are multiple variants.
 
-This document rectifies these issues and more by specifying an encoding, preventing canonicalization attacks, improving domain separation, fixing the modulo bias, making delta a constant, treating Balloon and Balloon-M as one algorithm, adding support for key derivation, and improving the performance.
+This document rectifies these issues and more by specifying an encoding, preventing canonicalization attacks, improving domain separation, not computing the memory accesses from the salt, fixing the modulo bias, making delta a constant, treating Balloon and Balloon-M as one algorithm, adding support for key derivation, adding support for a pepper and associated data, adding support for keyed hashing like HMAC {{!RFC2104}}, and improving the performance.
 
 # Conventions and Definitions
 
@@ -204,13 +204,13 @@ Constants:
 - `MAX_LENGTH`: the maximum output length, which is 4294967295 as an integer.
 - `MAX_PEPPER`: the maximum pepper length, which is 64 bytes.
 
-# The Balloon Algorithm
+# The BKDF Algorithm
 
 ~~~
-Balloon(password, salt, spaceCost, timeCost, parallelism, length, pepper)
+BKDF(password, salt, spaceCost, timeCost, parallelism, length, pepper)
 ~~~
 
-Balloon calls an internal function that provides memory hardness in a way that supports parallelism, which enables greater memory hardness without increasing the delay. The result of XORing the internal function outputs together is then used alongside user provided parameters for key derivation following the Extract-then-Expand paradigm.
+BKDF calls an internal function that provides memory hardness in a way that supports parallelism, which enables greater memory hardness without increasing the delay. The result of XORing the internal function outputs together is then used alongside user provided parameters for key derivation following the Extract-then-Expand paradigm.
 
 Inputs:
 
@@ -250,7 +250,7 @@ reps = Ceiling(length / HASH_LEN)
 previous = ByteArray(0)
 result = ByteArray(0)
 for i = 0 to reps
-    previous = PRF(key, previous || LE64(counter++) || UTF8("balloon") || hash)
+    previous = PRF(key, previous || LE64(counter++) || UTF8("bkdf") || hash)
     result = result || previous
 
 return result.Slice(0, length)
@@ -262,7 +262,7 @@ return result.Slice(0, length)
 BalloonCore(key, spaceCost, timeCost, parallelism, iteration)
 ~~~
 
-The BalloonCore function is the internal function used by Balloon for memory hardness. It can be divided into three steps:
+The BalloonCore function is the internal function used by BKDF for memory hardness. It can be divided into three steps:
 
 1. Expand: a large buffer is filled with pseudorandom bytes derived by repeatedly hashing the user provided parameters. This buffer is divided into blocks the size of the hash function output length.
 2. Mix: the buffer is mixed for the number of rounds specified by the user. Each block becomes equal to the hash of the previous block, the current block, and delta other blocks pseudorandomly chosen from the buffer.
@@ -270,11 +270,11 @@ The BalloonCore function is the internal function used by Balloon for memory har
 
 Inputs:
 
-- `key`: the key from the Balloon algorithm.
-- `spaceCost`: the space cost provided to the Balloon algorithm.
-- `timeCost`: the time cost provided to the Balloon algorithm.
-- `parallelism`: the parallelism provided to the Balloon algorithm.
-- `iteration`: the parallelism loop iteration from the Balloon algorithm.
+- `key`: the key from the BKDF algorithm.
+- `spaceCost`: the space cost provided to the BKDF algorithm.
+- `timeCost`: the time cost provided to the BKDF algorithm.
+- `parallelism`: the parallelism provided to the BKDF algorithm.
+- `iteration`: the parallelism loop iteration from the BKDF algorithm.
 
 Outputs:
 
@@ -319,7 +319,7 @@ There are several ways to optimise the pseudocode, which is written for readabil
 
 # Choosing the Hash Function
 
-The choice of cryptographic hash function affects the performance and security of Balloon in two ways:
+The choice of cryptographic hash function affects the performance and security of BKDF in two ways:
 
 1. For the same parameters, the attacker has an advantage if the algorithm is faster in hardware versus software. They will be able to do the computation in less time than the defender.
 2. For the same delay, the defender will be forced to use smaller parameters with a slower cryptographic hash function in software. Using a faster algorithm in software means stronger parameters can be used.
@@ -350,24 +350,24 @@ For password hashing, it is RECOMMENDED to use a `length` of 128 or 256 bits. Fo
 
 # Encoding Password Hashes
 
-To store Balloon hashes in a database as strings, the following format SHOULD be used:
+To store BKDF hashes in a database as strings, the following format SHOULD be used:
 
 ~~~
-$balloon-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
+$bkdf-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
 ~~~
 
-- `balloon-hash`: where `hash` is the official hash function OID minus any prefix (e.g. `id-`). For example, `blake2b512` for BLAKE2b-512 {{!RFC7693}}.
-- `v=version`: this is version 2 of Balloon. If the design is modified, the version will be incremented.
+- `bkdf-hash`: where `hash` is the official hash function OID minus any prefix (e.g. `id-`). For example, `blake2b512` for BLAKE2b-512 {{!RFC7693}}.
+- `v=version`: this is version 1 of BKDF. If the design is modified, the version will be incremented.
 - `m=spaceCost`: the memory size in blocks, not KiB.
 - `t=timeCost`: the number of rounds.
 - `p=parallelism`: the number of CPU cores/internal function calls in parallel.
 - `salt`: the salt encoded in Base64 with no padding {{!RFC4648}}.
-- `hash`: the full/untruncated Balloon output encoded in Base64 with no padding {{!RFC4648}}.
+- `hash`: the full/untruncated BKDF output encoded in Base64 with no padding {{!RFC4648}}.
 
 Here is an example encoded hash:
 
 ~~~
-$balloon-sha256$v=1$m=1024,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GVlnqmNEDfs
+$bkdf-sha256$v=1$m=1024,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GVlnqmNEDfs
 ~~~
 
 # Security Considerations
@@ -392,15 +392,15 @@ For key derivation, one can feed a secret key into the `pepper` parameter for ad
 
 ## Security Guarantees
 
-The security properties of Balloon depend on the chosen collision-resistant hash function. For example, a 256-bit hash typically provides 128-bit collision resistance and 256-bit (second) preimage resistance.
+The security properties of BKDF depend on the chosen collision-resistant hash function. For example, a 256-bit hash typically provides 128-bit collision resistance and 256-bit (second) preimage resistance.
 
 Balloon has been proven sequentially memory-hard in the random-oracle model and uses a password-independent memory access pattern to prevent side-channel attacks leaking information about the password {{BCS16}}. However, no function that uses a password-independent memory access pattern can be optimally memory-hard in the parallel setting {{AB16}}. In other words, Balloon is inherently weaker against parallel attacks.
 
-To improve Balloon's resistance to parallel attacks, the output can be fed into a password hashing function with a password-dependent memory access pattern, such as scrypt {{?RFC7914}} or Argon2d {{?RFC9106}}. The cost of this approach is like increasing the `timeCost` of Balloon {{BCS16}}. However, even this does not defend against an attacker who can both a) obtain memory access pattern information and b) perform a massively parallel attack; it only protects against the two attacks separately.
+To improve resistance against parallel attacks, the output can be fed into a password hashing function with a password-dependent memory access pattern, such as scrypt {{?RFC7914}} or Argon2d {{?RFC9106}}. The cost of this approach is like increasing the `timeCost` of BKDF {{BCS16}}. However, even this does not defend against an attacker who can both a) obtain memory access pattern information and b) perform a massively parallel attack; it only protects against the two attacks separately.
 
-Unlike password hashing algorithms such as bcrypt {{PM99}}, which perform many small pseudorandom reads, Balloon is not cache-hard. Whilst there are no known publications on cache-hardness at the time of writing, it is reported to provide better GPU/ASIC resistance than memory-hardness for shorter delays (e.g. < 1000 ms). In such cases, memory bandwidth and CPU cache sizes are bigger bottlenecks than total memory. This makes cache-hard algorithms ideal for authentication scenarios but potentially less suited for key derivation.
+Unlike password hashing algorithms such as bcrypt {{PM99}}, which perform many small pseudorandom reads, BKDF is not cache-hard. Whilst there are no known publications on cache-hardness at the time of writing, it is reported to provide better GPU/ASIC resistance than memory-hardness for shorter delays (e.g. < 1000 ms). In such cases, memory bandwidth and CPU cache sizes are bigger bottlenecks than total memory. This makes cache-hard algorithms ideal for authentication scenarios but potentially less suited for key derivation.
 
-Third-party analysis of Balloon can be found in {{RD16}}, {{AB17}}, {{ABP17}}, and {{RD17}}. However, note that there are multiple versions of Balloon, and none of these papers have analysed the version specified in this document.
+Third-party analysis of Balloon can be found in {{RD16}}, {{AB17}}, {{ABP17}}, and {{RD17}}. However, note that there are multiple versions of Balloon, and none of these papers have analysed BKDF.
 
 # IANA Considerations
 
@@ -410,7 +410,7 @@ This document has no IANA actions.
 
 # Test Vectors
 
-## Balloon-SHA-256
+## BKDF-SHA-256
 
 ### Test Vector 1
 
