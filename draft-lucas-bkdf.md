@@ -195,8 +195,8 @@ Constants:
 - `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this MUST be 1024 bytes.
 - `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
 - `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
-- `MIN_SPACECOST`: the minimum space cost, which is 1 as an integer.
-- `MAX_SPACECOST`: the maximum space cost, which is 4294967296 as an integer.
+- `MIN_SPACECOST`: the minimum space cost, which is 0 as an integer.
+- `MAX_SPACECOST`: the maximum space cost, which is 32 as an integer.
 - `MIN_TIMECOST`: the minimum time cost, which is 1 as an integer.
 - `MAX_TIMECOST`: the maximum time cost, which is 16777215 as an integer.
 - `MIN_PARALLELISM`: the minimum parallelism, which is 1 as an integer.
@@ -222,7 +222,7 @@ Inputs:
 
 - `password`: the password to be hashed, which MUST NOT be greater than `MAX_PASSWORD` bytes long.
 - `salt`: the unique salt, which MUST NOT be greater than `MAX_SALT` bytes long.
-- `spaceCost`: the memory size in blocks, which MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST` that is a power of 2. A block is `HASH_LEN` bytes long.
+- `spaceCost`: the memory size in `2**spaceCost` blocks, where a block is `HASH_LEN` bytes long. It MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST`.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 - `parallelism`: the number of CPU cores/internal function calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
 - `length`: the length of the password hash/derived key in bytes, which MUST NOT be greater than `MAX_LENGTH`.
@@ -295,6 +295,7 @@ Outputs:
 Steps:
 
 ~~~
+spaceCost = 2**spaceCost
 buffer = BlockArray(spaceCost, HASH_LEN)
 counter = 0
 
@@ -350,7 +351,7 @@ The following procedure can be used to choose parameters:
 1. For performing authentication on a server or running the algorithm on any type of user device, set the `parallelism` to 1. This avoids resource exhaustion attacks and slowdowns on machines with few CPU cores. Otherwise, set it to the maximum number of CPU cores the machine can dedicate to the computation.
 2. Establish the maximum acceptable delay for the user. For example, 100-500 ms for authentication, 250-1000 ms for file encryption, and 1000-5000 ms for disk encryption. On servers, you also need to factor in the maximum number of authentication attempts per second.
 3. Determine the maximum amount of memory available, taking into account different types of user devices and denial-of-service. For instance, mobile phones versus laptops/desktops.
-4. Convert the MiB/GiB memory size that is a power of 2 to bytes. Then set `spaceCost` to `bytes / HASH_LEN`, which is the number of blocks.
+4. Convert the closest MiB/GiB memory size that is a power of 2 to bytes. Then set `spaceCost` to `log2(bytes / HASH_LEN)`, which is the binary logarithm of the number of blocks.
 5. Find the `timeCost` that brings you closest to the maximum acceptable delay or target number of authentication attempts per second by running benchmarks.
 6. If `timeCost` is only 1, reduce `spaceCost` to be able to increase `timeCost`. Performing multiple rounds is beneficial for security {{AB17}}.
 
@@ -375,7 +376,7 @@ $bkdf-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
 
 - `bkdf-hash`: where `hash` is the official hash function OID minus any prefix (e.g. `id-`). For example, `blake2b512` for BLAKE2b-512 {{!RFC7693}}.
 - `v=version`: this is version 1 of BKDF. If the design is modified, the version will be incremented.
-- `m=spaceCost`: the memory size in blocks, not KiB.
+- `m=spaceCost`: the space cost as a number, not the memory size in blocks or KiB.
 - `t=timeCost`: the number of rounds.
 - `p=parallelism`: the number of CPU cores/internal function calls in parallel.
 - `salt`: the salt encoded in Base64 with no padding {{!RFC4648}}.
@@ -384,7 +385,7 @@ $bkdf-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
 Here is an example encoded hash:
 
 ~~~
-$bkdf-sha256$v=1$m=1024,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GVlnqmNEDfs
+$bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GVlnqmNEDfs
 ~~~
 
 # Security Considerations
