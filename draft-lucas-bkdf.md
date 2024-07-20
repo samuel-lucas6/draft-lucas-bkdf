@@ -192,7 +192,7 @@ Operations:
 
 Constants:
 
-- `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this MUST be 1024 bytes.
+- `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this MUST be 128 bytes.
 - `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
 - `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
 - `MIN_SPACECOST`: the minimum space cost, which is 0 as an integer.
