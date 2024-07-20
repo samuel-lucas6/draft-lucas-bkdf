@@ -432,6 +432,8 @@ This document has no IANA actions.
 
 ## BKDF-SHA-256
 
+NOTE: These test vectors are out of date and will be updated when the new design has been finalised.
+
 ### Test Vector 1
 
 ~~~
