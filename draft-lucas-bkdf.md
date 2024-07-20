@@ -347,10 +347,12 @@ The following procedure can be used to choose parameters:
 5. Find the `timeCost` that brings you closest to the maximum acceptable delay or target number of authentication attempts per second by running benchmarks.
 6. If `timeCost` is only 1, reduce `spaceCost` to be able to increase `timeCost`. Performing multiple rounds is beneficial for security {{AB17}}.
 
-To cause an attacker to get < 10 kH/s on an RTX 4080 Super GPU, the parameters must be at least one of the following when using SHA-256 or SHA-512 as the collision-resistant PRF:
+To cause an attacker to get < 10 kH/s on an RTX 4080 Super GPU, the parameters must be at least one of the following when using SHA-256, SHA-512, HMAC-SHA256, or HMAC-SHA512 as the collision-resistant PRF:
 
 - SHA-256: `m=256 KiB, t=48`; `m=512 KiB, t=24`; `m=1 MiB, t=12`; `m=2 MiB, t=6`
 - SHA-512: `m=256 KiB, t=34`; `m=512 KiB, t=17`; `m=1 MiB, t=9`; `m=2 MiB, t=4`
+- HMAC-SHA256: `m=256 KiB, t=36`; `m=512 KiB, t=18`; `m=1 MiB, t=9`; `m=2 MiB, t=5`
+- HMAC-SHA512: `m=256 KiB, t=26`; `m=512 KiB, t=13`; `m=1 MiB, t=7`; `m=2 MiB, t=3`
 
 In all cases, it is RECOMMENDED to use a 128-bit `salt`. However, a 64-bit `salt` MAY be used if there are storage constraints. Regardless, the `salt` length SHOULD NOT vary in your protocol/application. See {{security-considerations}} for guidance on generating the `salt`.
 
