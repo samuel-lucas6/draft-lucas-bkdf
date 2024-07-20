@@ -202,7 +202,7 @@ Constants:
 - `MIN_PARALLELISM`: the minimum parallelism, which is 1 as an integer.
 - `MAX_PARALLELISM`: the maximum parallelism, which is 16777215 as an integer.
 - `MAX_LENGTH`: the maximum output length, which is 4294967295 as an integer.
-- `MAX_PEPPER`: the maximum pepper length, which is 64 bytes.
+- `MAX_PEPPER`: the maximum pepper length, which is 64 bytes or the maximum collision-resistant PRF key length if this is less than 64 bytes (e.g. 32 bytes).
 - `MAX_ASSOCIATED_DATAS`: the maximum number of arrays for the associated data, which is 64 as an integer.
 - `MAX_ASSOCIATED_DATA`: the maximum length of an associated data array, which is 4294967295 bytes.
 
