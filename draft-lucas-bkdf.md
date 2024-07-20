@@ -343,6 +343,8 @@ It is RECOMMENDED to use a cryptographic hash function that is fast in software 
 
 The higher the `spaceCost` and `timeCost`, the longer it takes to compute an output. If these values are too small, security is unnecessarily reduced. If they are too large, there is a risk of user frustration and denial-of-service for different types of user devices and servers. To make matters even more complicated, these parameters may need to be increased over time as hardware gets faster/smaller.
 
+The purpose of `parallelism` is to enable greater memory hardness without increasing the delay. This is because the mixing is done by multiple CPU cores simultaneously rather than serially. However, a poor choice of `parallelism` can also cause denial-of-service or give the attacker an advantage.
+
 The following procedure can be used to choose parameters:
 
 1. For performing authentication on a server or running the algorithm on any type of user device, set the `parallelism` to 1. This avoids resource exhaustion attacks and slowdowns on machines with few CPU cores. Otherwise, set it to the maximum number of CPU cores the machine can dedicate to the computation.
@@ -395,7 +397,7 @@ If possible, store the password in protected memory and/or erase the password fr
 
 The salt MUST be unique each time you call the function unless verifying a password hash or deriving the same key. It SHOULD be randomly generated using a cryptographically secure pseudorandom number generator (CSPRNG). However, it MAY be deterministic and predictable if random generation is not possible.
 
-The `spaceCost`, `timeCost`, and `parallelism` MUST be carefully chosen to avoid denial-of-service and user frustration whilst ensuring adequate protection against password cracking.
+The `spaceCost`, `timeCost`, and `parallelism` MUST be carefully chosen to avoid denial-of-service and user frustration whilst ensuring adequate protection against password cracking. See the {{choosing-the-parameters}} section for more information.
 
 If you want to derive multiple keys (e.g. for encryption and authentication), you MUST only run the algorithm once and use different portions of the output as separate keys. Otherwise, the attacker may have an advantage, like only needing to run the algorithm once instead of twice to check a password, and you will be forced to use weaker parameters.
 
