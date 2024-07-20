@@ -324,6 +324,7 @@ There are several ways to optimise the pseudocode, which is written for readabil
 - Instead of `Ceiling(length / HASH_LEN)`, one can do `(length + HASH_LEN - 1) / HASH_LEN`.
 - Convert the key derivation domain separation string to bytes once rather than in each iteration of the loop.
 - Use an incremental hash function API rather than manual concatenation.
+- If possible with the hash function API, cache the hash function state after processing the key so it does not need to be processed again.
 
 # Choosing the Hash Function
 
