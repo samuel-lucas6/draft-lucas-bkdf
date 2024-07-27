@@ -184,8 +184,9 @@ Operations:
 - `ByteArray(l)`: the creation of a new byte array with length `l`.
 - `BlockArray(i, l)`: the creation of a new array of arrays containing `i` byte arrays, each with length `l`.
 - `PRF(k, m)`: the output of a collision-resistant PRF (e.g. HMAC-SHA512 {{!RFC2104}}) with key `k` and message `m`, both byte arrays. If the collision-resistant hash function supports a key parameter (e.g. BLAKE2b {{!RFC7693}}), that parameter MUST be used. Otherwise, if there is no key parameter (e.g. SHA-512 {{!RFC6234}}), you MUST perform prefix MAC and pad the key with zeros to the block size (1024 bits for SHA-512).
+- `LE32(x)`: the little-endian encoding of unsigned 32-bit integer `x`.
 - `LE64(x)`: the little-endian encoding of unsigned 64-bit integer `x`.
-- `ReadLE64(a)`: the conversion of byte array `a` into an unsigned, little-endian 64-bit integer.
+- `ReadLE32(a)`: the conversion of byte array `a` into an unsigned, little-endian 32-bit integer.
 - `ZeroPad(a, n)`: byte array `a` padded with zeros until it is `n` bytes long.
 - `Ceiling(x)`: the floating point `x` rounded up to the nearest whole number.
 - `UTF8(s)`: the UTF-8 encoding of string `s`.
@@ -245,9 +246,9 @@ else
 
 ad = ByteArray(0)
 for i = 0 to associatedData.Length - 1
-    ad = ad || LE64(associatedData[i].Length) || associatedData[i]
+    ad = ad || LE32(associatedData[i].Length) || associatedData[i]
 
-key = PRF(key, LE64(password.Length) || password || LE64(salt.Length) || salt || ad)
+key = PRF(key, LE32(password.Length) || password || LE32(salt.Length) || salt || ad)
 
 parallel for i = 0 to parallelism - 1
     outputs[i] = BalloonCore(key, spaceCost, timeCost, parallelism, i + 1)
@@ -262,7 +263,7 @@ reps = Ceiling(length / HASH_LEN)
 previous = ByteArray(0)
 result = ByteArray(0)
 for i = 0 to reps
-    previous = PRF(key, previous || LE64(counter++) || UTF8("bkdf") || hash)
+    previous = PRF(key, previous || LE32(counter++) || UTF8("bkdf") || hash)
     result = result || previous
 
 return result.Slice(0, length)
@@ -297,22 +298,28 @@ Steps:
 ~~~
 spaceCost = 2**spaceCost
 buffer = BlockArray(spaceCost, HASH_LEN)
-counter = 0
 
-buffer[0] = PRF(key, LE64(counter++) || LE64(spaceCost) || LE64(timeCost) || LE64(parallelism) || LE64(iteration))
+counter = 0
+emptyKey = ZeroPad(ByteArray(0), HASH_LEN)
+pseudorandom = ByteArray(0)
+iterations = (spaceCost * timeCost * 3) / (HASH_LEN / 4)
+for i = 0 to iterations - 1
+    pseudorandom = pseudorandom || PRF(emptyKey, LE64(counter++) || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
+
+buffer[0] = PRF(key, LE64(counter++) || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
 for m = 1 to spaceCost - 1
     buffer[m] = PRF(key, LE64(counter++) || buffer[m - 1])
 
-emptyKey = ZeroPad(ByteArray(0), HASH_LEN)
+offset = 0
 previous = buffer[spaceCost - 1]
 for t = 0 to timeCost - 1
     for m = 0 to spaceCost - 1
-        pseudorandom = PRF(emptyKey, LE64(counter++) || LE64(spaceCost) || LE64(timeCost) || LE64(parallelism) || LE64(iteration))
-        other1 = ReadLE64(pseudorandom.Slice(0, 8)) % spaceCost
-        other2 = ReadLE64(pseudorandom.Slice(8, 8)) % spaceCost
-        other3 = ReadLE64(pseudorandom.Slice(16, 8)) % spaceCost
+        other1 = ReadLE32(pseudorandom.Slice(offset, 4)) % spaceCost
+        other2 = ReadLE32(pseudorandom.Slice(offset + 4, 4)) % spaceCost
+        other3 = ReadLE32(pseudorandom.Slice(offset + 8, 4)) % spaceCost
         buffer[m] = PRF(key, LE64(counter++) || previous || buffer[m] || buffer[other1] || buffer[other2] || buffer[other3])
         previous = buffer[m]
+        offset = offset + 12
 
 return previous
 ~~~
