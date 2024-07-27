@@ -193,7 +193,7 @@ Operations:
 
 Constants:
 
-- `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this MUST be 128 bytes.
+- `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this MUST be the nearest power of 2 to the block size (e.g. 128 bytes for SHAKE128 {{FIPS202}}).
 - `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
 - `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
 - `MIN_SPACECOST`: the minimum space cost, which is 0 as an integer.
