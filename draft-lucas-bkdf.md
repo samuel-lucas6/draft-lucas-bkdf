@@ -149,7 +149,7 @@ informative:
 
 --- abstract
 
-This document describes the Balloon key derivation function (BKDF), a memory-hard function suitable for password hashing and password-based key derivation. It has proven memory-hardness properties, is resistant to cache-timing attacks, is easy to implement, and is built from any collision-resistant pseudorandom function (PRF), hash function, or extendable-output function (XOF).
+This document specifies the Balloon key derivation function (BKDF) for password hashing and password-based key derivation. It is memory-hard, resistant to cache-timing attacks, easy to implement, and can be instantiated using any collision-resistant pseudorandom function (PRF), hash function, or extendable-output function (XOF).
 
 --- middle
 
