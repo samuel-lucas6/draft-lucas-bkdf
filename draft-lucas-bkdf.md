@@ -32,6 +32,28 @@ normative:
         org: National Institute of Standards and Technology
     date: 2015
 
+  BLAKE3:
+    title: "BLAKE3: one function, fast everywhere"
+    target: https://github.com/BLAKE3-team/BLAKE3-specs/blob/master/blake3.pdf
+    author:
+      -
+        ins: J. O'Connor
+        name: Jack O’Connor
+        org: SpaceX
+      -
+        ins: J-P. Aumasson
+        name: Jean-Philippe Aumasson
+        org: Taurus SA
+      -
+        ins: S. Neves
+        name: Samuel Neves
+        org: University of Coimbra
+      -
+        ins: Z. Wilcox-O’Hearn
+        name: Zooko Wilcox-O’Hearn
+        org: Electric Coin Co
+    date: 2020
+
 informative:
 
   PM99:
@@ -193,7 +215,7 @@ Operations:
 
 Constants:
 
-- `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this MUST be the nearest power of 2 to the block size (e.g. 128 bytes for SHAKE128 {{FIPS202}}).
+- `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this MUST be the nearest power of 2 to the block size (e.g. 128 bytes for SHAKE128 {{FIPS202}} and 64 bytes for BLAKE3 {{BLAKE3}}).
 - `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
 - `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
 - `MIN_SPACECOST`: the minimum space cost, which is 0 as an integer.
