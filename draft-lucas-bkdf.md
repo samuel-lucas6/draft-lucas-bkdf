@@ -238,7 +238,7 @@ BKDF(password, salt, spaceCost, timeCost, parallelism, length, pepper, associate
 BKDF calls an internal function that provides memory hardness in a way that supports parallelism and then produces a variable-length output. It can be divided into three steps:
 
 1. KDF Extract: a key is derived from the password, salt, pepper, and associated data.
-2. Parallelism: the internal function, which uses the derived key as well as other user provided parameters, is called in parallel, and the outputs are XORed together.
+2. Parallelism: the internal function, which uses the derived key as well as other user-provided parameters, is called in parallel, and the outputs are XORed together.
 3. KDF Expand: a KDF in feedback mode is used to derive key material for the user from the derived key, context information, and the XORed outputs.
 
 Note that the internal function calls MUST be implemented in parallel, not serially. Otherwise, the `parallelism` parameter essentially becomes another `timeCost` parameter.
@@ -301,7 +301,7 @@ BalloonCore(key, spaceCost, timeCost, parallelism, iteration)
 
 The BalloonCore function is the internal function used by BKDF for memory hardness. It can be divided into three steps:
 
-1. Expand: a large buffer is filled with pseudorandom bytes derived by hashing user provided parameters and domain separation before repeatedly hashing the previous output.
+1. Expand: a large buffer is filled with pseudorandom bytes derived by hashing user-provided parameters and domain separation before repeatedly hashing the previous output.
 2. Mix: the buffer is mixed for the number of rounds specified by the user. Each hash-sized block becomes equal to the hash of the previous block, the current block, and delta other blocks pseudorandomly chosen from the buffer.
 3. Extract: the last block of the buffer is output for key derivation.
 
