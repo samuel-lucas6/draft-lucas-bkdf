@@ -299,11 +299,12 @@ return result.Slice(0, length)
 BalloonCore(key, spaceCost, timeCost, parallelism, iteration)
 ~~~
 
-The BalloonCore function is the internal function used by BKDF for memory hardness. It can be divided into three steps:
+The BalloonCore function is the internal function used by BKDF for memory hardness. It can be divided into four steps:
 
-1. Expand: a large buffer is filled with pseudorandom bytes derived by hashing user-provided parameters and domain separation before repeatedly hashing the previous output.
-2. Mix: the buffer is mixed for the number of rounds specified by the user. Each hash-sized block becomes equal to the hash of the previous block, the current block, and delta other blocks pseudorandomly chosen from the buffer.
-3. Extract: the last block of the buffer is output for key derivation.
+1. Precompute: the user-provided parameters and domain separation are used to precompute pseudorandom bytes for the password-independent memory accesses performed in step 3.
+2. Expand: a large buffer is filled with pseudorandom bytes derived by hashing user-provided parameters and domain separation before repeatedly hashing the previous output.
+3. Mix: the buffer is mixed for the number of rounds specified by the user. Each hash-sized block becomes equal to the hash of the previous block, the current block, and delta other blocks pseudorandomly chosen from the buffer.
+4. Extract: the last block of the buffer is output for key derivation.
 
 Inputs:
 
