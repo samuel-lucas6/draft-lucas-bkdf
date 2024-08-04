@@ -365,12 +365,13 @@ There are several ways to optimise the pseudocode, which is written for readabil
 
 # Choosing the Hash Function
 
-The choice of collision-resistant hash function affects the performance and security of BKDF in two ways:
+The choice of collision-resistant hash function affects the performance and security of BKDF in three ways:
 
 1. For the same parameters, the attacker has an advantage if the algorithm is faster in hardware versus software. They will be able to do the computation in less time than the defender.
 2. For the same delay, the defender will be forced to use smaller parameters with a slower collision-resistant hash function in software. Using a faster algorithm in software means stronger parameters can be used.
+3. A smaller output length worsens the performance and memory-hardness.
 
-It is RECOMMENDED to use a collision-resistant hash function that is fast in software but relatively slow in hardware, such as BLAKE2b {{!RFC7693}}. As another example, SHA-512 is preferable to SHA-256 {{!RFC6234}}. Finally, SHA-3 {{FIPS202}} is NOT RECOMMENDED as it is slower in software compared to in hardware.
+It is RECOMMENDED to use a collision-resistant hash function with a larger output length that is fast in software but relatively slow in hardware, such as BLAKE2b-512 {{!RFC7693}}. As another example, SHA-512 is preferable to SHA-256 {{!RFC6234}}. Finally, SHA-3 {{FIPS202}} is NOT RECOMMENDED as it is slower in software compared to in hardware.
 
 # Choosing the Parameters
 
