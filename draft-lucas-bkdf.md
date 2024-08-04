@@ -373,7 +373,7 @@ The choice of collision-resistant hash function affects the performance and secu
 
 It is RECOMMENDED to use a collision-resistant hash function with a larger output length that is fast in software but relatively slow in hardware, such as BLAKE2b-512 {{!RFC7693}}. As another example, SHA-512 is preferable to SHA-256 {{!RFC6234}}. Finally, SHA-3 {{FIPS202}} is NOT RECOMMENDED as it is slower in software compared to in hardware.
 
-# Choosing the Parameters
+# Choosing the Cost Parameters
 
 The higher the `spaceCost` and `timeCost`, the longer it takes to compute an output. If these values are too small, security is unnecessarily reduced. If they are too large, there is a risk of user frustration and denial-of-service for different types of user devices and servers. To make matters even more complicated, these parameters may need to be increased over time as hardware gets faster/smaller.
 
@@ -381,10 +381,10 @@ The purpose of `parallelism` is to enable greater memory hardness without increa
 
 The following procedure can be used to choose parameters:
 
-1. For performing authentication on a server or running the algorithm on any type of user device, set the `parallelism` to 1. This avoids resource exhaustion attacks and slowdowns on machines with few CPU cores. Otherwise, set it to the maximum number of CPU cores the machine can dedicate to the computation.
+1. For performing authentication on a server or running the algorithm on any type of user device, set the `parallelism` to 1. This avoids resource exhaustion attacks and slowdowns on machines with few CPU cores. Otherwise, set it to the maximum number of CPU cores the machine can dedicate to the computation (e.g. 4 cores).
 2. Establish the maximum acceptable delay for the user. For example, 100-500 ms for authentication, 250-1000 ms for file encryption, and 1000-5000 ms for disk encryption. On servers, you also need to factor in the maximum number of authentication attempts per second.
 3. Determine the maximum amount of memory available, taking into account different types of user devices and denial-of-service. For instance, mobile phones versus laptops/desktops.
-4. Convert the closest MiB/GiB memory size that is a power of 2 to bytes. Then set `spaceCost` to `log2(bytes / HASH_LEN)`, which is the binary logarithm of the number of blocks.
+4. Convert the closest MiB/GiB memory size that is a power of 2 to bytes. Then set `spaceCost` to `log2(bytes / HASH_LEN)`, which is the binary logarithm of the number of blocks divided by the BKDF block size.
 5. Find the `timeCost` that brings you closest to the maximum acceptable delay or target number of authentication attempts per second by running benchmarks.
 6. If `timeCost` is only 1, reduce `spaceCost` to be able to increase `timeCost`. Performing multiple rounds is beneficial for security {{AB17}}.
 
@@ -395,9 +395,9 @@ To cause an attacker to get < 10 kH/s on an RTX 4080 Super GPU, the parameters m
 - HMAC-SHA256: `m=256 KiB, t=36`; `m=512 KiB, t=18`; `m=1 MiB, t=9`; `m=2 MiB, t=5`
 - HMAC-SHA512: `m=256 KiB, t=26`; `m=512 KiB, t=13`; `m=1 MiB, t=7`; `m=2 MiB, t=3`
 
-In all cases, it is RECOMMENDED to use a 128-bit `salt`. However, a 64-bit `salt` MAY be used if there are storage constraints. Regardless, the `salt` length SHOULD NOT vary in your protocol/application. See {{security-considerations}} for guidance on generating the `salt`.
+Note that these are example minimum parameters at the time of writing. They will not be appropraite minimums in the future, and you SHOULD use stronger parameters if you can afford to.
 
-For password hashing, it is RECOMMENDED to use a `length` of 128 or 256 bits. For key derivation, it is RECOMMENDED to use a `length` of at least 128 bits.
+See {{security-considerations}} for guidance on the other parameters.
 
 # Encoding Password Hashes
 
@@ -429,9 +429,13 @@ Technically, only preimage resistance is required for password hashing to preven
 
 If possible, store the password in protected memory and/or erase the password from memory once it is no longer required. Otherwise, an attacker may be able to recover the password from memory or the disk.
 
+In all cases, it is RECOMMENDED to use a 128-bit `salt`. However, a 64-bit `salt` MAY be used if there are storage constraints. Regardless, the `salt` length SHOULD NOT vary in your protocol/application.
+
 The salt MUST be unique each time you call the function unless verifying a password hash or deriving the same key. It SHOULD be randomly generated using a cryptographically secure pseudorandom number generator (CSPRNG). However, it MAY be deterministic and predictable if random generation is not possible.
 
 The `spaceCost`, `timeCost`, and `parallelism` MUST be carefully chosen to avoid denial-of-service and user frustration whilst ensuring adequate protection against password cracking. See the {{choosing-the-parameters}} section for more information.
+
+For password hashing, it is RECOMMENDED to use a `length` of 128 or 256 bits. For key derivation, it is RECOMMENDED to use a `length` of at least 128 bits.
 
 If you want to derive multiple keys (e.g. for encryption and authentication), you MUST only run the algorithm once and use different portions of the output as separate keys. Otherwise, the attacker may have an advantage, like only needing to run the algorithm once instead of twice to check a password, and you will be forced to use weaker parameters.
 
