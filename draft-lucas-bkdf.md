@@ -413,7 +413,7 @@ $bkdf-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
 - `t=timeCost`: the number of rounds.
 - `p=parallelism`: the number of CPU cores/internal function calls in parallel.
 - `salt`: the salt encoded in Base64 with no padding {{!RFC4648}}.
-- `hash`: the full/untruncated BKDF output encoded in Base64 with no padding {{!RFC4648}}.
+- `hash`: the full/untruncated BKDF output encoded in Base64 with no padding {{!RFC4648}}. See {{security-considerations}} for guidance on the length.
 
 Here is an example encoded hash:
 
