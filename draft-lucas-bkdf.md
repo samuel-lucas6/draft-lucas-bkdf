@@ -407,7 +407,7 @@ To store BKDF hashes in a database as strings, the following format SHOULD be us
 $bkdf-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
 ~~~
 
-- `bkdf-hash`: where `hash` is the official hash function OID minus any prefix (e.g. `id-`). For example, `blake2b512` for BLAKE2b-512 {{!RFC7693}}.
+- `bkdf-hash`: where `hash` is the official hash function OID (from an RFC or NIST) minus any prefix (e.g. `id-`). For example, `blake2b512` for BLAKE2b-512 {{!RFC7693}}.
 - `v=version`: this is version 1 of BKDF. If the design is modified, the version will be incremented.
 - `m=spaceCost`: the space cost as a number, not the memory size in blocks or KiB.
 - `t=timeCost`: the number of rounds.
