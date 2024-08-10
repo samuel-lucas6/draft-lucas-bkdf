@@ -4,8 +4,8 @@
 
 Network Working Group                                           S. Lucas
 Internet-Draft                                    Individual Contributor
-Intended status: Informational                             4 August 2024
-Expires: 5 February 2025
+Intended status: Informational                            10 August 2024
+Expires: 11 February 2025
 
 
                  Balloon Key Derivation Function (BKDF)
@@ -46,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 February 2025.
+   This Internet-Draft will expire on 11 February 2025.
 
 Copyright Notice
 
@@ -507,9 +507,9 @@ return previous
 
    $bkdf-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
 
-   *  bkdf-hash: where hash is the official hash function OID minus any
-      prefix (e.g. id-).  For example, blake2b512 for BLAKE2b-512
-      [RFC7693].
+   *  bkdf-hash: where hash is the official hash function OID (from an
+      RFC or NIST) minus any prefix (e.g. id-).  For example, blake2b512
+      for BLAKE2b-512 [RFC7693].
 
    *  v=version: this is version 1 of BKDF.  If the design is modified,
       the version will be incremented.
