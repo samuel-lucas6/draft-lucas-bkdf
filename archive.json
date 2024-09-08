@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-09-05T01:34:49.745089+00:00",
+  "timestamp": "2024-09-08T01:40:55.665920+00:00",
   "repo": "samuel-lucas6/draft-lucas-bkdf",
   "labels": [
     {
@@ -580,7 +580,7 @@
       "labels": [],
       "body": "https://samuellucas.com/draft-lucas-bkdf/draft-lucas-bkdf.html#section-3-4:\r\n> Note that the internal function calls **MUST** be implemented in parallel, not serially. Otherwise, the `parallelism` parameter essentially becomes another `timeCost` parameter.\r\n\r\nIt is often desirable to provide a single-threaded implementation as well for platforms without multi-threading support, but this sentence would make this non-standard.\r\n\r\nI would propose one of the following:\r\n- Define an error that is returned if `parallelism` is not 1 but the implementation only supports single-threaded.\r\n- Add a separate single-threaded function, e.g. `BKDF_single` (terrible name ... I know).\r\n\r\nUnless this was intentional and the idea is that this algorithm should never be used without multi-threading, in which case I would add as much to the specification and also consider disallowing `parallelism` set to 1.",
       "createdAt": "2024-09-04T11:42:40Z",
-      "updatedAt": "2024-09-04T17:59:59Z",
+      "updatedAt": "2024-09-07T16:34:35Z",
       "closedAt": null,
       "comments": [
         {
@@ -589,6 +589,13 @@
           "body": "Thanks for looking at the draft/your feedback.\r\n\r\nI debated putting this for that reason. My thinking was an implementation would just support `parallelism` set to 1, like libsodium, in which case that can't be implemented in parallel. However, I think you're right that the wording should be changed to make that clear or this should be removed completely. I was just trying to avoid what happened with scrypt.\r\n\r\nAre you happy to be listed in the Acknowledgements section?",
           "createdAt": "2024-09-04T17:59:58Z",
           "updatedAt": "2024-09-04T17:59:58Z"
+        },
+        {
+          "author": "daxpedda",
+          "authorAssociation": "NONE",
+          "body": "> Are you happy to be listed in the Acknowledgements section?\r\n\r\nSure!",
+          "createdAt": "2024-09-07T16:34:33Z",
+          "updatedAt": "2024-09-07T16:34:33Z"
         }
       ]
     }
