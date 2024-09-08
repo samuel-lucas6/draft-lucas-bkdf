@@ -227,8 +227,7 @@ Constants:
 - `MAX_PARALLELISM`: the maximum parallelism, which is 16777215 as an integer.
 - `MAX_LENGTH`: the maximum output length, which is 4294967295 as an integer.
 - `MAX_PEPPER`: the maximum pepper length, which is 64 bytes or the maximum collision-resistant PRF key length if this is less than 64 bytes (e.g. 32 bytes).
-- `MAX_ASSOCIATED_DATAS`: the maximum number of arrays for the associated data, which is 64 as an integer.
-- `MAX_ASSOCIATED_DATA`: the maximum length of an associated data array, which is 4294967295 bytes.
+- `MAX_ASSOCIATED_DATA`: the maximum associated data length, which is 4294967295 bytes.
 
 # The BKDF Algorithm
 
@@ -253,7 +252,7 @@ Inputs:
 - `parallelism`: the number of CPU cores/internal function calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
 - `length`: the length of the password hash/derived key in bytes, which MUST NOT be greater than `MAX_LENGTH`.
 - `pepper`: an optional secret key, which MUST NOT be greater than `MAX_PEPPER` bytes long.
-- `associatedData`: an array of arrays for optional context information. The number of arrays MUST NOT be greater than `MAX_ASSOCIATED_DATAS`, and each array MUST NOT be greater than `MAX_ASSOCIATED_DATA` bytes long.
+- `associatedData`: optional context information, which MUST NOT be greater than `MAX_ASSOCIATED_DATA` bytes long.
 
 Outputs:
 
@@ -269,11 +268,7 @@ if pepper.Length == 0
 else
     key = pepper
 
-ad = ByteArray(0)
-for i = 0 to associatedData.Length - 1
-    ad = ad || LE32(associatedData[i].Length) || associatedData[i]
-
-key = PRF(key, LE32(password.Length) || password || LE32(salt.Length) || salt || ad)
+key = PRF(key, LE32(password.Length) || password || LE32(salt.Length) || salt || LE32(associatedData.Length) || associatedData)
 
 parallel for i = 0 to parallelism - 1
     outputs[i] = BalloonCore(key, spaceCost, timeCost, parallelism, i + 1)
@@ -449,6 +444,8 @@ For password hashing, it is RECOMMENDED to encrypt password hashes using an unau
 For key derivation, one can feed a secret key into the `pepper` parameter for additional security. This forces an attacker to compromise the pepper before they can guess the password. It is RECOMMENDED to use a 256-bit pepper.
 
 To bind context information to the output, like a user ID and server ID for password-authenticated key exchange (PAKE) algorithms, the `associatedData` parameter can be used. However, in most cases, this parameter is not required.
+
+Importantly, if multiple values are concatenated to form the `associatedData` parameter, they MUST be unambiguously encoded. For example, by using fixed-length values or by prepending/appending the little-endian encoded length of each value.
 
 ## Security Guarantees
 
