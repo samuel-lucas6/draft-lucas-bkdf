@@ -1356,7 +1356,7 @@ BKDF(password, salt, spaceCost, timeCost, parallelism, length, pepper, associate
           <p id="section-3-6.1.1"><code>password</code>: the password to be hashed, which <span class="bcp14">MUST NOT</span> be greater than <code>MAX_PASSWORD</code> bytes long.<a href="#section-3-6.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-3-6.2">
-          <p id="section-3-6.2.1"><code>salt</code>: the unique salt, which <span class="bcp14">MUST NOT</span> be greater than <code>MAX_SALT</code> bytes long.<a href="#section-3-6.2.1" class="pilcrow">¶</a></p>
+          <p id="section-3-6.2.1"><code>salt</code>: the unique and non-secret salt, which <span class="bcp14">MUST NOT</span> be greater than <code>MAX_SALT</code> bytes long.<a href="#section-3-6.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-3-6.3">
           <p id="section-3-6.3.1"><code>spaceCost</code>: the memory size in <code>2**spaceCost</code> blocks, where a block is <code>HASH_LEN</code> bytes long. It <span class="bcp14">MUST</span> be an integer between <code>MIN_SPACECOST</code> and <code>MAX_SPACECOST</code>.<a href="#section-3-6.3.1" class="pilcrow">¶</a></p>

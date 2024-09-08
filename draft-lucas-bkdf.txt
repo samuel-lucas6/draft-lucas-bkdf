@@ -247,8 +247,8 @@ BKDF(password, salt, spaceCost, timeCost, parallelism, length, pepper, associate
    *  password: the password to be hashed, which MUST NOT be greater
       than MAX_PASSWORD bytes long.
 
-   *  salt: the unique salt, which MUST NOT be greater than MAX_SALT
-      bytes long.
+   *  salt: the unique and non-secret salt, which MUST NOT be greater
+      than MAX_SALT bytes long.
 
    *  spaceCost: the memory size in 2**spaceCost blocks, where a block
       is HASH_LEN bytes long.  It MUST be an integer between
