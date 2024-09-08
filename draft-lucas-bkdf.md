@@ -246,7 +246,7 @@ Note that the internal function calls SHOULD be implemented in parallel, not ser
 Inputs:
 
 - `password`: the password to be hashed, which MUST NOT be greater than `MAX_PASSWORD` bytes long.
-- `salt`: the unique salt, which MUST NOT be greater than `MAX_SALT` bytes long.
+- `salt`: the unique and non-secret salt, which MUST NOT be greater than `MAX_SALT` bytes long.
 - `spaceCost`: the memory size in `2**spaceCost` blocks, where a block is `HASH_LEN` bytes long. It MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST`.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 - `parallelism`: the number of CPU cores/internal function calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
