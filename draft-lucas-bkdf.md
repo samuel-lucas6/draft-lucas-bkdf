@@ -216,6 +216,7 @@ Operations:
 Constants:
 
 - `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this MUST be the nearest power of 2 to the block size (e.g. 128 bytes for SHAKE128 {{FIPS202}} and 64 bytes for BLAKE3 {{BLAKE3}}).
+- `VERSION`: the version of the algorithm specified in this document, which is 1 as an integer.
 - `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
 - `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
 - `MIN_SPACECOST`: the minimum space cost, which is 0 as an integer.
@@ -329,9 +330,9 @@ emptyKey = ZeroPad(ByteArray(0), HASH_LEN)
 pseudorandom = ByteArray(0)
 reps = (spaceCost * timeCost * 3) / (HASH_LEN / 4)
 for i = 0 to reps - 1
-    pseudorandom = pseudorandom || PRF(emptyKey, LE64(counter++) || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
+    pseudorandom = pseudorandom || PRF(emptyKey, LE64(counter++) || LE32(VERSION) || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
 
-buffer[0] = PRF(key, LE64(counter++) || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
+buffer[0] = PRF(key, LE64(counter++) || LE32(VERSION) ||  LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
 for m = 1 to spaceCost - 1
     buffer[m] = PRF(key, LE64(counter++) || buffer[m - 1])
 
@@ -410,7 +411,7 @@ $bkdf-hash$v=version$m=spaceCost,t=timeCost,p=parallelism$salt$hash
 ~~~
 
 - `bkdf-hash`: where `hash` is the official hash function OID (from an RFC or NIST) minus any prefix (e.g. `id-`). For example, `blake2b512` for BLAKE2b-512 {{!RFC7693}}.
-- `v=version`: this is version 1 of BKDF. If the design is modified, the version will be incremented.
+- `v=version`: the current BKDF version is specified by the `VERSION` constant. If the design is modified after publication, the version will be incremented.
 - `m=spaceCost`: the space cost as a number, not the memory size in blocks or KiB.
 - `t=timeCost`: the number of rounds.
 - `p=parallelism`: the number of CPU cores/internal function calls in parallel.
