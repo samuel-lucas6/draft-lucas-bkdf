@@ -4,8 +4,8 @@
 
 Network Working Group                                           S. Lucas
 Internet-Draft                                    Individual Contributor
-Intended status: Informational                            10 August 2024
-Expires: 11 February 2025
+Intended status: Informational                          8 September 2024
+Expires: 12 March 2025
 
 
                  Balloon Key Derivation Function (BKDF)
@@ -46,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 February 2025.
+   This Internet-Draft will expire on 12 March 2025.
 
 Copyright Notice
 
@@ -236,9 +236,11 @@ BKDF(password, salt, spaceCost, timeCost, parallelism, length, pepper, associate
        for the user from the derived key, context information, and the
        XORed outputs.
 
-   Note that the internal function calls MUST be implemented in
+   Note that the internal function calls SHOULD be implemented in
    parallel, not serially.  Otherwise, the parallelism parameter
-   essentially becomes another timeCost parameter.
+   essentially becomes another timeCost parameter.  Therefore, if
+   multithreading is not possible, it is RECOMMENDED to only support a
+   parallelism of 1.
 
    Inputs:
 
