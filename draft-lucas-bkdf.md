@@ -241,7 +241,7 @@ BKDF calls an internal function that provides memory hardness in a way that supp
 2. Parallelism: the internal function, which uses the derived key as well as other user-provided parameters, is called in parallel, and the outputs are XORed together.
 3. KDF Expand: a KDF in feedback mode is used to derive key material for the user from the derived key, context information, and the XORed outputs.
 
-Note that the internal function calls MUST be implemented in parallel, not serially. Otherwise, the `parallelism` parameter essentially becomes another `timeCost` parameter.
+Note that the internal function calls SHOULD be implemented in parallel, not serially. Otherwise, the `parallelism` parameter essentially becomes another `timeCost` parameter. Therefore, if multithreading is not possible, it is RECOMMENDED to only support a `parallelism` of 1.
 
 Inputs:
 
