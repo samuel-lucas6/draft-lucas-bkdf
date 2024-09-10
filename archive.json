@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-09-08T01:40:55.665920+00:00",
+  "timestamp": "2024-09-10T01:36:09.695588+00:00",
   "repo": "samuel-lucas6/draft-lucas-bkdf",
   "labels": [
     {
@@ -573,15 +573,15 @@
       "id": "I_kwDOK_bi8M6VUOH-",
       "title": "Non-Parallel Option",
       "url": "https://github.com/samuel-lucas6/draft-lucas-bkdf/issues/19",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "daxpedda",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "https://samuellucas.com/draft-lucas-bkdf/draft-lucas-bkdf.html#section-3-4:\r\n> Note that the internal function calls **MUST** be implemented in parallel, not serially. Otherwise, the `parallelism` parameter essentially becomes another `timeCost` parameter.\r\n\r\nIt is often desirable to provide a single-threaded implementation as well for platforms without multi-threading support, but this sentence would make this non-standard.\r\n\r\nI would propose one of the following:\r\n- Define an error that is returned if `parallelism` is not 1 but the implementation only supports single-threaded.\r\n- Add a separate single-threaded function, e.g. `BKDF_single` (terrible name ... I know).\r\n\r\nUnless this was intentional and the idea is that this algorithm should never be used without multi-threading, in which case I would add as much to the specification and also consider disallowing `parallelism` set to 1.",
       "createdAt": "2024-09-04T11:42:40Z",
-      "updatedAt": "2024-09-07T16:34:35Z",
-      "closedAt": null,
+      "updatedAt": "2024-09-08T10:45:30Z",
+      "closedAt": "2024-09-08T10:45:30Z",
       "comments": [
         {
           "author": "samuel-lucas6",
