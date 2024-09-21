@@ -210,7 +210,7 @@ Operations:
 - `PRF(k, m)`: the output of a collision-resistant PRF (e.g. HMAC-SHA512 {{!RFC2104}}) with key `k` and message `m`, both byte arrays. If the collision-resistant hash function supports a key parameter (e.g. BLAKE2b {{!RFC7693}}), that parameter MUST be used. Otherwise, if there is no key parameter (e.g. SHA-512 {{!RFC6234}}), you MUST perform prefix MAC and pad the key with zeros to the block size (1024 bits for SHA-512).
 - `LE32(x)`: the little-endian encoding of unsigned 32-bit integer `x`.
 - `LE64(x)`: the little-endian encoding of unsigned 64-bit integer `x`.
-- `ReadLE32(a)`: the conversion of byte array `a` into an unsigned, little-endian 32-bit integer.
+- `ReadLE32(a)`: the little-endian conversion of byte array `a` into an unsigned 32-bit integer.
 - `ZeroPad(a, n)`: byte array `a` padded with zeros until it is `n` bytes long.
 - `Ceiling(x)`: the floating point `x` rounded up to the nearest whole number.
 - `UTF8(s)`: the UTF-8 {{!RFC3629}} encoding of string `s`.
