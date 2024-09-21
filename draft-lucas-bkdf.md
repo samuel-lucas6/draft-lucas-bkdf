@@ -431,6 +431,8 @@ In all cases, it is RECOMMENDED to use a 128-bit `salt`. However, a 64-bit `salt
 
 The salt MUST be unique each time you call the function unless verifying a password hash or deriving the same key. It SHOULD be randomly generated using a cryptographically secure pseudorandom number generator (CSPRNG). However, it MAY be deterministic and predictable if random generation is not possible.
 
+The salt SHOULD be considered a non-secret value. It SHOULD be stored alongside the password hash for password hashing (see {{encoding-password-hashes}}) or in a file header for key derivation. If you have a secret key, the password hash SHOULD be encrypted or the `pepper` parameter SHOULD be used, as described below.
+
 The `spaceCost`, `timeCost`, and `parallelism` parameters MUST be carefully chosen to avoid denial-of-service and user frustration whilst ensuring adequate protection against password cracking. See {{choosing-the-cost-parameters}} for more information about choosing these parameters.
 
 Avoid using hardcoded `spaceCost`/`timeCost`/`parallelism` parameters when performing password hashing; these SHOULD be stored as part of the password hash, as described in {{encoding-password-hashes}}. With key derivation, hardcoded parameters are acceptable if protocol versioning is used.
@@ -439,7 +441,7 @@ For password hashing, it is RECOMMENDED to use a `length` of 128 or 256 bits. Fo
 
 If you want to derive multiple keys (e.g. for encryption and authentication), you MUST only run the algorithm once and use different portions of the output as separate keys. Otherwise, the attacker may have an advantage, like only needing to run the algorithm once instead of twice to check a password, and you will be forced to use weaker parameters.
 
-For password hashing, it is RECOMMENDED to encrypt password hashes using an unauthenticated encryption algorithm or an authenticated encryption with associated data (AEAD) scheme {{?RFC5116}} before storage. This forces an attacker to compromise the key, which is stored separately from the database, as well as the database before they can begin password cracking. If the key is compromised but the database is not, it can be rotated without having to reset any passwords.
+For password hashing, it is RECOMMENDED to encrypt password hashes using an unauthenticated encryption algorithm or an authenticated encryption with associated data (AEAD) scheme {{?RFC5116}} before storage. This forces an attacker to compromise the key, which is stored separately from the database, as well as the database before they can begin password cracking. If the key is compromised but the database is not, it can be rotated without having to reset any passwords. It is RECOMMENDED to use a 256-bit key.
 
 For key derivation, one can feed a secret key into the `pepper` parameter for additional security. This forces an attacker to compromise the pepper before they can guess the password. It is RECOMMENDED to use a 256-bit pepper.
 
