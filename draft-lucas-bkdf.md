@@ -384,7 +384,7 @@ The following procedure can be used to choose parameters:
 1. For performing authentication on a server or running the algorithm on any type of user device, set the `parallelism` to 1. This avoids resource exhaustion attacks and slowdowns on machines with few CPU cores. Otherwise, set it to the maximum number of CPU cores the machine can dedicate to the computation (e.g. 4 cores).
 2. Establish the maximum acceptable delay for the user. For example, 100-500 ms for authentication, 250-1000 ms for file encryption, and 1000-5000 ms for disk encryption. On servers, you also need to factor in the maximum number of authentication attempts per second.
 3. Determine the maximum amount of memory available, taking into account different types of user devices and denial-of-service. For instance, mobile phones versus laptops/desktops.
-4. Convert the closest MiB/GiB memory size that is a power of 2 to bytes. Then set `spaceCost` to `log2(bytes / HASH_LEN)`, which is the binary logarithm of the number of blocks divided by the BKDF block size.
+4. Convert the closest MiB/GiB memory size that is a power of 2 to bytes. Then set `spaceCost` to `log2(bytes / HASH_LEN)`, which converts the number of BKDF blocks to an integer between `MIN_SPACECOST` and `MAX_SPACECOST`.
 5. Find the `timeCost` that brings you closest to the maximum acceptable delay or target number of authentication attempts per second by running benchmarks.
 6. If `timeCost` is only 1, reduce `spaceCost` to be able to increase `timeCost`. Performing multiple rounds is beneficial for security {{AB17}}.
 
