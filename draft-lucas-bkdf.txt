@@ -120,6 +120,8 @@ Table of Contents
    support for a pepper and associated data, adding support for keyed
    hashing like HMAC [RFC2104], and improving the performance.
 
+   Note that this document is not an IETF product and is not a standard.
+
 2.  Conventions and Definitions
 
    The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”,
