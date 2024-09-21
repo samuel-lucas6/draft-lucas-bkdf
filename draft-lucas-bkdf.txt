@@ -4,8 +4,8 @@
 
 Network Working Group                                           S. Lucas
 Internet-Draft                                    Individual Contributor
-Intended status: Informational                          8 September 2024
-Expires: 12 March 2025
+Intended status: Informational                         21 September 2024
+Expires: 25 March 2025
 
 
                  Balloon Key Derivation Function (BKDF)
@@ -46,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 March 2025.
+   This Internet-Draft will expire on 25 March 2025.
 
 Copyright Notice
 
@@ -557,6 +557,12 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
    number generator (CSPRNG).  However, it MAY be deterministic and
    predictable if random generation is not possible.
 
+   The salt SHOULD be considered a non-secret value.  It SHOULD be
+   stored alongside the password hash for password hashing (see
+   Section 8) or in a file header for key derivation.  If you have a
+   secret key, the password hash SHOULD be encrypted or the pepper
+   parameter SHOULD be used, as described below.
+
    The spaceCost, timeCost, and parallelism parameters MUST be carefully
    chosen to avoid denial-of-service and user frustration whilst
    ensuring adequate protection against password cracking.  See
@@ -585,7 +591,7 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
    stored separately from the database, as well as the database before
    they can begin password cracking.  If the key is compromised but the
    database is not, it can be rotated without having to reset any
-   passwords.
+   passwords.  It is RECOMMENDED to use a 256-bit key.
 
    For key derivation, one can feed a secret key into the pepper
    parameter for additional security.  This forces an attacker to
