@@ -188,6 +188,8 @@ BKDF exists because the Balloon paper does not fully specify the algorithm, the 
 
 This document rectifies these issues and more by specifying an encoding, preventing canonicalization attacks, improving domain separation, not computing the memory accesses from the salt, fixing the modulo bias, making delta a constant, treating Balloon and Balloon-M as one algorithm, adding support for key derivation, adding support for a pepper and associated data, adding support for keyed hashing like HMAC {{!RFC2104}}, and improving the performance.
 
+Note that this document is not an IETF product and is not a standard.
+
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
