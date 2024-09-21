@@ -475,7 +475,7 @@ NOTE: These test vectors are out of date and will be updated when the new design
 
 ### Test Vector 1
 
-~~~
+~~~ test-vectors
 password: 70617373776f7264
 
 salt: 73616c74
@@ -491,7 +491,7 @@ hash: 97a11df9382a788c781929831d409d3599e0b67ab452ef834718114efdcd1c6d
 
 ### Test Vector 2
 
-~~~
+~~~ test-vectors
 password: 70617373776f7264
 
 salt: 73616c74
@@ -507,7 +507,7 @@ hash: a67b383bb88a282aef595d98697f90820adf64582a4b3627c76b7da3d8bae915
 
 ### Test Vector 3
 
-~~~
+~~~ test-vectors
 password: 68756e7465723432
 
 salt: 6578616d706c6573616c74
@@ -523,7 +523,7 @@ hash: 1832bd8e5cbeba1cb174a13838095e7e66508e9bf04c40178990adbc8ba9eb6f
 
 ### Test Vector 4
 
-~~~
+~~~ test-vectors
 password:
 
 salt: 73616c74
