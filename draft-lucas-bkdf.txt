@@ -168,8 +168,8 @@ Table of Contents
 
    *  LE64(x): the little-endian encoding of unsigned 64-bit integer x.
 
-   *  ReadLE32(a): the conversion of byte array a into an unsigned,
-      little-endian 32-bit integer.
+   *  ReadLE32(a): the little-endian conversion of byte array a into an
+      unsigned 32-bit integer.
 
    *  ZeroPad(a, n): byte array a padded with zeros until it is n bytes
       long.
