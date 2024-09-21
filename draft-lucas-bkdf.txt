@@ -479,7 +479,7 @@ return previous
        timeCost.  Performing multiple rounds is beneficial for security
        [AB17].
 
-   To cause an attacker to get < 10 kH/s on an RTX 4080 Super GPU, the
+   To cause an attacker to get < 10 kH/s on an RTX 4080 SUPER GPU, the
    parameters must be at least one of the following when using SHA-256,
    SHA-512, HMAC-SHA256, or HMAC-SHA512 as the collision-resistant PRF:
 
