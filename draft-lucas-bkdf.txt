@@ -396,8 +396,8 @@ return previous
    *  Instead of Ceiling(length / HASH_LEN), one can do (length +
       HASH_LEN - 1) / HASH_LEN.
 
-   *  Convert the key derivation domain separation string to bytes once
-      rather than in each iteration of the loop.
+   *  Convert constants/unchanging values to bytes once rather than in
+      each loop iteration or in multiple loops.
 
    *  Use an incremental hash function API rather than manual
       concatenation.
