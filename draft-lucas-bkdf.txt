@@ -467,9 +467,9 @@ return previous
        For instance, mobile phones versus laptops/desktops.
 
    4.  Convert the closest MiB/GiB memory size that is a power of 2 to
-       bytes.  Then set spaceCost to log2(bytes / HASH_LEN), which is
-       the binary logarithm of the number of blocks divided by the BKDF
-       block size.
+       bytes.  Then set spaceCost to log2(bytes / HASH_LEN), which
+       converts the number of BKDF blocks to an integer between
+       MIN_SPACECOST and MAX_SPACECOST.
 
    5.  Find the timeCost that brings you closest to the maximum
        acceptable delay or target number of authentication attempts per
