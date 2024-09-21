@@ -395,7 +395,7 @@ To cause an attacker to get < 10 kH/s on an RTX 4080 Super GPU, the parameters m
 - HMAC-SHA256: `m=256 KiB, t=36`; `m=512 KiB, t=18`; `m=1 MiB, t=9`; `m=2 MiB, t=5`
 - HMAC-SHA512: `m=256 KiB, t=26`; `m=512 KiB, t=13`; `m=1 MiB, t=7`; `m=2 MiB, t=3`
 
-Note that these are example minimum parameters at the time of writing. They will not be appropraite minimums in the future, and you SHOULD use stronger parameters if you can afford to.
+Note that these are example minimum parameters at the time of writing. They will not be appropriate minimums in the future, and you SHOULD use stronger parameters if you can afford to.
 
 See {{security-considerations}} for guidance on the other parameters.
 
