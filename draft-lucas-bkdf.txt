@@ -483,17 +483,17 @@ return previous
    parameters must be at least one of the following when using SHA-256,
    SHA-512, HMAC-SHA256, or HMAC-SHA512 as the collision-resistant PRF:
 
-   *  SHA-256: m=256 KiB, t=48; m=512 KiB, t=24; m=1 MiB, t=12; m=2 MiB,
-      t=6
+   *  SHA-256: m=256 KiB, t=48 or m=512 KiB, t=24 or m=1 MiB, t=12
+      or m=2 MiB, t=6
 
-   *  SHA-512: m=256 KiB, t=34; m=512 KiB, t=17; m=1 MiB, t=9; m=2 MiB,
-      t=4
+   *  SHA-512: m=256 KiB, t=34 or m=512 KiB, t=17 or m=1 MiB, t=9 or m=2
+      MiB, t=4
 
-   *  HMAC-SHA256: m=256 KiB, t=36; m=512 KiB, t=18; m=1 MiB, t=9; m=2
-      MiB, t=5
+   *  HMAC-SHA256: m=256 KiB, t=36 or m=512 KiB, t=18 or m=1 MiB, t=9
+      or m=2 MiB, t=5
 
-   *  HMAC-SHA512: m=256 KiB, t=26; m=512 KiB, t=13; m=1 MiB, t=7; m=2
-      MiB, t=3
+   *  HMAC-SHA512: m=256 KiB, t=26 or m=512 KiB, t=13 or m=1 MiB, t=7
+      or m=2 MiB, t=3
 
    Note that these are example minimum parameters at the time of
    writing.  They will not be appropriate minimums in the future, and
