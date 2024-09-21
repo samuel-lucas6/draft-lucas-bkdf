@@ -433,7 +433,7 @@ In all cases, it is RECOMMENDED to use a 128-bit `salt`. However, a 64-bit `salt
 
 The salt MUST be unique each time you call the function unless verifying a password hash or deriving the same key. It SHOULD be randomly generated using a cryptographically secure pseudorandom number generator (CSPRNG). However, it MAY be deterministic and predictable if random generation is not possible.
 
-The salt SHOULD be considered a non-secret value. It SHOULD be stored alongside the password hash for password hashing (see {{encoding-password-hashes}}) or in a file header for key derivation. If you have a secret key, the password hash SHOULD be encrypted or the `pepper` parameter SHOULD be used, as described below.
+The salt SHOULD be considered a non-secret value. It SHOULD be stored alongside the password hash for password hashing (see {{encoding-password-hashes}}) or in something like a file header for key derivation. If you have a secret key, the password hash SHOULD be encrypted or the `pepper` parameter SHOULD be used, as described below.
 
 The `spaceCost`, `timeCost`, and `parallelism` parameters MUST be carefully chosen to avoid denial-of-service and user frustration whilst ensuring adequate protection against password cracking. See {{choosing-the-cost-parameters}} for more information about choosing these parameters.
 
