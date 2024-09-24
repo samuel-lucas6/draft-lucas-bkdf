@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-09-22T01:44:53.852463+00:00",
+  "timestamp": "2024-09-24T01:40:01.292097+00:00",
   "repo": "samuel-lucas6/draft-lucas-bkdf",
   "labels": [
     {
@@ -598,6 +598,86 @@
           "updatedAt": "2024-09-07T16:34:33Z"
         }
       ]
+    },
+    {
+      "number": 20,
+      "id": "I_kwDOK_bi8M6XdOPL",
+      "title": "Salt-based memory accesses",
+      "url": "https://github.com/samuel-lucas6/draft-lucas-bkdf/issues/20",
+      "state": "OPEN",
+      "author": "samuel-lucas6",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "I'm still unsure whether the memory access pattern should depend on the salt. This means a unique access pattern per user, which helps against attacks. However, there was concern on the [PHC mailing list](https://github.com/samuel-lucas6/phc-discussions) that a cache-timing attack may leak who has logged in (see #14).\r\n\r\nFrom the wording in the Balloon paper and comments on the PHC mailing list, it sounds like Balloon was the first algorithm to propose using the salt. Therefore, I'm not sure there's any literature on this.\r\n\r\nThe next best thing if the salt isn't used would be getting the user to specify a [context string](https://crypto.stackexchange.com/a/112587) (e.g., the website/application name) alongside the other parameters to make the access pattern unique to that service. However, this means yet another parameter for the user (in addition to the `associatedData` as well), and the length would need to be restricted for performance.",
+      "createdAt": "2024-09-22T11:02:42Z",
+      "updatedAt": "2024-09-22T11:02:43Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 21,
+      "id": "I_kwDOK_bi8M6XdPN9",
+      "title": "Hybrid memory access pattern",
+      "url": "https://github.com/samuel-lucas6/draft-lucas-bkdf/issues/21",
+      "state": "OPEN",
+      "author": "samuel-lucas6",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "There's a general dislike of password-independent access patterns because they're weaker and slower than password-dependent. However, password-dependent access patterns mean side-channel attacks leak information about the password. Therefore, a hybrid access pattern seems like the best approach to get some of the benefits of both. This is supported by Argon2id's adoption compared to Argon2i and Argon2d.\r\n\r\nThe downsides are that you lose proper cache-timing attack resistance and implementation becomes slightly more complicated. But the algorithm will probably be viewed more favourably if full password-independent access is abandoned.",
+      "createdAt": "2024-09-22T11:13:06Z",
+      "updatedAt": "2024-09-22T11:13:06Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 22,
+      "id": "I_kwDOK_bi8M6XdQH9",
+      "title": "spaceCost and timeCost compared to other algorithms",
+      "url": "https://github.com/samuel-lucas6/draft-lucas-bkdf/issues/22",
+      "state": "OPEN",
+      "author": "samuel-lucas6",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "`timeCost` is a misleading name because increasing `spaceCost` also increases the delay. Then `spaceCost` is the number of blocks when it would be more intuitive if the memory size (e.g., in bytes or KiB) was specified. This saves the user having to compute the number of blocks from their target memory size and the hash function output length. Because the weird thing at the moment is that you can have the same `spaceCost` with two different hash functions and you'll get a different memory size.\r\n\r\nThe problem is what to call these (e.g., `iterations` and `memorySize` perhaps) and how changing `spaceCost` affects the domain separation.",
+      "createdAt": "2024-09-22T11:23:01Z",
+      "updatedAt": "2024-09-22T11:23:01Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 23,
+      "id": "I_kwDOK_bi8M6XdRKa",
+      "title": "Taking from the buffer for key derivation",
+      "url": "https://github.com/samuel-lucas6/draft-lucas-bkdf/issues/23",
+      "state": "OPEN",
+      "author": "samuel-lucas6",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "An alternative to the current KDF approach mentioned by Henry is to take bytes from the final buffer. If `length` is less than the buffer size, you take from the final buffer (e.g., midway through to the end). If it's larger than the buffer size, you would additionally do further mixing of the buffer to retrieve the remaining bytes. Because of `parallelism`, you would then XOR these (potentially larger than a block) outputs to produce the derived key material for the user.\r\n\r\nThis apparently has better memory hardness because you have to keep more data in memory until the end. It also has better performance for outputs smaller than the buffer size. However, there's a performance penalty for larger outputs since it requires more mixing, which is more expensive than a regular KDF. It also sounds more annoying to implement due to the potential extra mixing.",
+      "createdAt": "2024-09-22T11:34:28Z",
+      "updatedAt": "2024-09-22T11:34:28Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 24,
+      "id": "I_kwDOK_bi8M6XdbSv",
+      "title": "Design rationale",
+      "url": "https://github.com/samuel-lucas6/draft-lucas-bkdf/issues/24",
+      "state": "OPEN",
+      "author": "samuel-lucas6",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "There should either be a section on the design rationale or this should be explained in a [paper](https://eprint.iacr.org/) that gets linked. A paper would be more academic and advertise the algorithm to get feedback but would require duplicating work on the draft and probably doing a more thorough literature review.",
+      "createdAt": "2024-09-22T13:08:05Z",
+      "updatedAt": "2024-09-22T13:08:05Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
