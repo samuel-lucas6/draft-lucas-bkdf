@@ -270,7 +270,7 @@ if pepper.Length == 0
 else
     key = pepper
 
-key = PRF(key, LE32(password.Length) || password || LE32(salt.Length) || salt || LE32(associatedData.Length) || associatedData)
+key = PRF(key, password || salt || associatedData || LE32(pepper.Length) || LE32(password.Length) || LE32(salt.Length) || LE32(associatedData.Length))
 
 parallel for i = 0 to parallelism - 1
     outputs[i] = BalloonCore(key, spaceCost, timeCost, parallelism, i + 1)
