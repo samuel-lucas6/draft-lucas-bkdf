@@ -4,8 +4,8 @@
 
 Network Working Group                                           S. Lucas
 Internet-Draft                                    Individual Contributor
-Intended status: Informational                         21 September 2024
-Expires: 25 March 2025
+Intended status: Informational                            5 October 2024
+Expires: 8 April 2025
 
 
                  Balloon Key Derivation Function (BKDF)
@@ -46,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 March 2025.
+   This Internet-Draft will expire on 8 April 2025.
 
 Copyright Notice
 
@@ -285,7 +285,7 @@ if pepper.Length == 0
 else
     key = pepper
 
-key = PRF(key, LE32(password.Length) || password || LE32(salt.Length) || salt || LE32(associatedData.Length) || associatedData)
+key = PRF(key, password || salt || associatedData || LE32(pepper.Length) || LE32(password.Length) || LE32(salt.Length) || LE32(associatedData.Length))
 
 parallel for i = 0 to parallelism - 1
     outputs[i] = BalloonCore(key, spaceCost, timeCost, parallelism, i + 1)
