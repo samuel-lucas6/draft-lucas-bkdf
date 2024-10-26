@@ -172,7 +172,7 @@ Table of Contents
       unsigned 32-bit integer.
 
    *  ZeroPad(a, n): byte array a padded with zeros until it is n bytes
-      long.
+      long.  If a is already n bytes long, no padding is performed.
 
    *  Ceiling(x): the floating point x rounded up to the nearest whole
       number.
@@ -185,6 +185,12 @@ Table of Contents
       XOF, this MUST be the nearest power of 2 to the block size (e.g.
       128 bytes for SHAKE128 [FIPS202] and 64 bytes for BLAKE3
       [BLAKE3]).
+
+   *  KEY_LEN: the length of the PRF key in bytes.  This MUST be the
+      length of whichever is shortest: the hash function block size or
+      the maximum PRF key size.  For example, 128 bytes for HMAC-SHA512
+      and SHA-512 (the block size) but 64 bytes for BLAKE2b and 32 bytes
+      for BLAKE3 (the maximum key parameter size).
 
    *  VERSION: the version of the algorithm specified in this document,
       which is 1 as an integer.
@@ -281,11 +287,13 @@ BKDF(password, salt, spaceCost, timeCost, parallelism, length, pepper, associate
 outputs = BlockArray(parallelism, HASH_LEN)
 
 if pepper.Length == 0
-    key = ZeroPad(ByteArray(0), HASH_LEN)
+    key = ByteArray(0)
 else
     key = pepper
+key = ZeroPad(key, KEY_LEN)
 
 key = PRF(key, password || salt || associatedData || LE32(pepper.Length) || LE32(password.Length) || LE32(salt.Length) || LE32(associatedData.Length))
+key = ZeroPad(key, KEY_LEN)
 
 parallel for i = 0 to parallelism - 1
     outputs[i] = BalloonCore(key, spaceCost, timeCost, parallelism, i + 1)
@@ -350,7 +358,7 @@ spaceCost = 2**spaceCost
 buffer = BlockArray(spaceCost, HASH_LEN)
 
 counter = 0
-emptyKey = ZeroPad(ByteArray(0), HASH_LEN)
+emptyKey = ZeroPad(ByteArray(0), KEY_LEN)
 pseudorandom = ByteArray(0)
 reps = (spaceCost * timeCost * 3) / (HASH_LEN / 4)
 for i = 0 to reps - 1
@@ -550,7 +558,7 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
    eliminates and the latter reduces the risk of password characters
    being encoded differently depending on the keyboard, operating
    system, and so on.  Without taking these steps, a user might not
-   always be able to log on, decrypt a file/disk, etc.
+   always be able to log in, decrypt a file/disk, etc.
 
    If possible, store the password in protected memory and/or erase the
    password from memory once it is no longer required.  Otherwise, an

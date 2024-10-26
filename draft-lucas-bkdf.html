@@ -1275,7 +1275,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
           <p id="section-2-4.13.1"><code>ReadLE32(a)</code>: the little-endian conversion of byte array <code>a</code> into an unsigned 32-bit integer.<a href="#section-2-4.13.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-4.14">
-          <p id="section-2-4.14.1"><code>ZeroPad(a, n)</code>: byte array <code>a</code> padded with zeros until it is <code>n</code> bytes long.<a href="#section-2-4.14.1" class="pilcrow">¶</a></p>
+          <p id="section-2-4.14.1"><code>ZeroPad(a, n)</code>: byte array <code>a</code> padded with zeros until it is <code>n</code> bytes long. If <code>a</code> is already <code>n</code> bytes long, no padding is performed.<a href="#section-2-4.14.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-4.15">
           <p id="section-2-4.15.1"><code>Ceiling(x)</code>: the floating point <code>x</code> rounded up to the nearest whole number.<a href="#section-2-4.15.1" class="pilcrow">¶</a></p>
@@ -1290,40 +1290,43 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
           <p id="section-2-6.1.1"><code>HASH_LEN</code>: the output length of the hash function in bytes. For an XOF, this <span class="bcp14">MUST</span> be the nearest power of 2 to the block size (e.g. 128 bytes for SHAKE128 <span>[<a href="#FIPS202" class="cite xref">FIPS202</a>]</span> and 64 bytes for BLAKE3 <span>[<a href="#BLAKE3" class="cite xref">BLAKE3</a>]</span>).<a href="#section-2-6.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.2">
-          <p id="section-2-6.2.1"><code>VERSION</code>: the version of the algorithm specified in this document, which is 1 as an integer.<a href="#section-2-6.2.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.2.1"><code>KEY_LEN</code>: the length of the PRF key in bytes. This <span class="bcp14">MUST</span> be the length of whichever is shortest: the hash function block size or the maximum PRF key size. For example, 128 bytes for HMAC-SHA512 and SHA-512 (the block size) but 64 bytes for BLAKE2b and 32 bytes for BLAKE3 (the maximum key parameter size).<a href="#section-2-6.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.3">
-          <p id="section-2-6.3.1"><code>MAX_PASSWORD</code>: the maximum password length, which is 4294967295 bytes.<a href="#section-2-6.3.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.3.1"><code>VERSION</code>: the version of the algorithm specified in this document, which is 1 as an integer.<a href="#section-2-6.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.4">
-          <p id="section-2-6.4.1"><code>MAX_SALT</code>: the maximum salt length, which is 4294967295 bytes.<a href="#section-2-6.4.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.4.1"><code>MAX_PASSWORD</code>: the maximum password length, which is 4294967295 bytes.<a href="#section-2-6.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.5">
-          <p id="section-2-6.5.1"><code>MIN_SPACECOST</code>: the minimum space cost, which is 0 as an integer.<a href="#section-2-6.5.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.5.1"><code>MAX_SALT</code>: the maximum salt length, which is 4294967295 bytes.<a href="#section-2-6.5.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.6">
-          <p id="section-2-6.6.1"><code>MAX_SPACECOST</code>: the maximum space cost, which is 32 as an integer.<a href="#section-2-6.6.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.6.1"><code>MIN_SPACECOST</code>: the minimum space cost, which is 0 as an integer.<a href="#section-2-6.6.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.7">
-          <p id="section-2-6.7.1"><code>MIN_TIMECOST</code>: the minimum time cost, which is 1 as an integer.<a href="#section-2-6.7.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.7.1"><code>MAX_SPACECOST</code>: the maximum space cost, which is 32 as an integer.<a href="#section-2-6.7.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.8">
-          <p id="section-2-6.8.1"><code>MAX_TIMECOST</code>: the maximum time cost, which is 16777215 as an integer.<a href="#section-2-6.8.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.8.1"><code>MIN_TIMECOST</code>: the minimum time cost, which is 1 as an integer.<a href="#section-2-6.8.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.9">
-          <p id="section-2-6.9.1"><code>MIN_PARALLELISM</code>: the minimum parallelism, which is 1 as an integer.<a href="#section-2-6.9.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.9.1"><code>MAX_TIMECOST</code>: the maximum time cost, which is 16777215 as an integer.<a href="#section-2-6.9.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.10">
-          <p id="section-2-6.10.1"><code>MAX_PARALLELISM</code>: the maximum parallelism, which is 16777215 as an integer.<a href="#section-2-6.10.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.10.1"><code>MIN_PARALLELISM</code>: the minimum parallelism, which is 1 as an integer.<a href="#section-2-6.10.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.11">
-          <p id="section-2-6.11.1"><code>MAX_LENGTH</code>: the maximum output length, which is 4294967295 as an integer.<a href="#section-2-6.11.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.11.1"><code>MAX_PARALLELISM</code>: the maximum parallelism, which is 16777215 as an integer.<a href="#section-2-6.11.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.12">
-          <p id="section-2-6.12.1"><code>MAX_PEPPER</code>: the maximum pepper length, which is 64 bytes or the maximum collision-resistant PRF key length if this is less than 64 bytes (e.g. 32 bytes).<a href="#section-2-6.12.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.12.1"><code>MAX_LENGTH</code>: the maximum output length, which is 4294967295 as an integer.<a href="#section-2-6.12.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.13">
-          <p id="section-2-6.13.1"><code>MAX_ASSOCIATED_DATA</code>: the maximum associated data length, which is 4294967295 bytes.<a href="#section-2-6.13.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.13.1"><code>MAX_PEPPER</code>: the maximum pepper length, which is 64 bytes or the maximum collision-resistant PRF key length if this is less than 64 bytes (e.g. 32 bytes).<a href="#section-2-6.13.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-6.14">
+          <p id="section-2-6.14.1"><code>MAX_ASSOCIATED_DATA</code>: the maximum associated data length, which is 4294967295 bytes.<a href="#section-2-6.14.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1390,11 +1393,13 @@ BKDF(password, salt, spaceCost, timeCost, parallelism, length, pepper, associate
 outputs = BlockArray(parallelism, HASH_LEN)
 
 if pepper.Length == 0
-    key = ZeroPad(ByteArray(0), HASH_LEN)
+    key = ByteArray(0)
 else
     key = pepper
+key = ZeroPad(key, KEY_LEN)
 
 key = PRF(key, password || salt || associatedData || LE32(pepper.Length) || LE32(password.Length) || LE32(salt.Length) || LE32(associatedData.Length))
+key = ZeroPad(key, KEY_LEN)
 
 parallel for i = 0 to parallelism - 1
     outputs[i] = BalloonCore(key, spaceCost, timeCost, parallelism, i + 1)
@@ -1473,7 +1478,7 @@ spaceCost = 2**spaceCost
 buffer = BlockArray(spaceCost, HASH_LEN)
 
 counter = 0
-emptyKey = ZeroPad(ByteArray(0), HASH_LEN)
+emptyKey = ZeroPad(ByteArray(0), KEY_LEN)
 pseudorandom = ByteArray(0)
 reps = (spaceCost * timeCost * 3) / (HASH_LEN / 4)
 for i = 0 to reps - 1
@@ -1657,7 +1662,7 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
 <a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-usage-guidelines" class="section-name selfRef">Usage Guidelines</a>
         </h3>
 <p id="section-9.1-1">Technically, only preimage resistance is required for password hashing to prevent the attacker learning information about the password from the hash. However, hash functions that are not collision resistant (e.g. MD5 <span>[<a href="#RFC6151" class="cite xref">RFC6151</a>]</span> and SHA-1 <span>[<a href="#RFC6194" class="cite xref">RFC6194</a>]</span>) <span class="bcp14">MUST NOT</span> be used. Such functions are cryptographically weak and unsuitable for new protocols.<a href="#section-9.1-1" class="pilcrow">¶</a></p>
-<p id="section-9.1-2">It is <span class="bcp14">RECOMMENDED</span> to either restrict password characters to ASCII <span>[<a href="#RFC20" class="cite xref">RFC20</a>]</span> or to apply Unicode Normalization Form C (NFC) <span>[<a href="#RFC8265" class="cite xref">RFC8265</a>]</span> to the password prior to UTF-8 encoding <span>[<a href="#RFC3629" class="cite xref">RFC3629</a>]</span>. The former eliminates and the latter reduces the risk of password characters being encoded differently depending on the keyboard, operating system, and so on. Without taking these steps, a user might not always be able to log on, decrypt a file/disk, etc.<a href="#section-9.1-2" class="pilcrow">¶</a></p>
+<p id="section-9.1-2">It is <span class="bcp14">RECOMMENDED</span> to either restrict password characters to ASCII <span>[<a href="#RFC20" class="cite xref">RFC20</a>]</span> or to apply Unicode Normalization Form C (NFC) <span>[<a href="#RFC8265" class="cite xref">RFC8265</a>]</span> to the password prior to UTF-8 encoding <span>[<a href="#RFC3629" class="cite xref">RFC3629</a>]</span>. The former eliminates and the latter reduces the risk of password characters being encoded differently depending on the keyboard, operating system, and so on. Without taking these steps, a user might not always be able to log in, decrypt a file/disk, etc.<a href="#section-9.1-2" class="pilcrow">¶</a></p>
 <p id="section-9.1-3">If possible, store the password in protected memory and/or erase the password from memory once it is no longer required. Otherwise, an attacker may be able to recover the password from memory or the disk.<a href="#section-9.1-3" class="pilcrow">¶</a></p>
 <p id="section-9.1-4">In all cases, it is <span class="bcp14">RECOMMENDED</span> to use a 128-bit <code>salt</code>. However, a 64-bit <code>salt</code> <span class="bcp14">MAY</span> be used if there are storage constraints. Regardless, the <code>salt</code> length <span class="bcp14">SHOULD NOT</span> vary in your protocol/application.<a href="#section-9.1-4" class="pilcrow">¶</a></p>
 <p id="section-9.1-5">The salt <span class="bcp14">MUST</span> be unique each time you call the function unless verifying a password hash or deriving the same key. It <span class="bcp14">SHOULD</span> be randomly generated using a cryptographically secure pseudorandom number generator (CSPRNG). However, it <span class="bcp14">MAY</span> be deterministic and predictable if random generation is not possible.<a href="#section-9.1-5" class="pilcrow">¶</a></p>
