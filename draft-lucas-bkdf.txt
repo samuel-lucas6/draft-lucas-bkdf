@@ -544,6 +544,14 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
    NOT be used.  Such functions are cryptographically weak and
    unsuitable for new protocols.
 
+   It is RECOMMENDED to either restrict password characters to ASCII
+   [RFC20] or to apply Unicode Normalization Form C (NFC) [RFC8265] to
+   the password prior to UTF-8 encoding [RFC3629].  The former
+   eliminates and the latter reduces the risk of password characters
+   being encoded differently depending on the keyboard, operating
+   system, and so on.  Without taking these steps, a user might not
+   always be able to log on, decrypt a file/disk, etc.
+
    If possible, store the password in protected memory and/or erase the
    password from memory once it is no longer required.  Otherwise, an
    attacker may be able to recover the password from memory or the disk.
@@ -738,6 +746,10 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
               Notes in Computer Science(), vol 10677, pp. 466–492, 2017,
               <https://doi.org/10.1007/978-3-319-70500-2_16>.
 
+   [RFC20]    Cerf, V., "ASCII format for network interchange", STD 80,
+              RFC 20, DOI 10.17487/RFC0020, October 1969,
+              <https://www.rfc-editor.org/rfc/rfc20>.
+
    [RFC5116]  McGrew, D., "An Interface and Algorithms for Authenticated
               Encryption", RFC 5116, DOI 10.17487/RFC5116, January 2008,
               <https://www.rfc-editor.org/rfc/rfc5116>.
@@ -755,6 +767,12 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
    [RFC7914]  Percival, C. and S. Josefsson, "The scrypt Password-Based
               Key Derivation Function", RFC 7914, DOI 10.17487/RFC7914,
               August 2016, <https://www.rfc-editor.org/rfc/rfc7914>.
+
+   [RFC8265]  Saint-Andre, P. and A. Melnikov, "Preparation,
+              Enforcement, and Comparison of Internationalized Strings
+              Representing Usernames and Passwords", RFC 8265,
+              DOI 10.17487/RFC8265, October 2017,
+              <https://www.rfc-editor.org/rfc/rfc8265>.
 
    [RFC9106]  Biryukov, A., Dinu, D., Khovratovich, D., and S.
               Josefsson, "Argon2 Memory-Hard Function for Password
