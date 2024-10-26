@@ -427,6 +427,8 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
 
 Technically, only preimage resistance is required for password hashing to prevent the attacker learning information about the password from the hash. However, hash functions that are not collision resistant (e.g. MD5 {{?RFC6151}} and SHA-1 {{?RFC6194}}) MUST NOT be used. Such functions are cryptographically weak and unsuitable for new protocols.
 
+It is RECOMMENDED to either restrict password characters to ASCII {{?RFC20}} or to apply Unicode Normalization Form C (NFC) {{?RFC8265}} to the password prior to UTF-8 encoding {{!RFC3629}}. The former eliminates and the latter reduces the risk of password characters being encoded differently depending on the keyboard, operating system, and so on. Without taking these steps, a user might not always be able to log on, decrypt a file/disk, etc.
+
 If possible, store the password in protected memory and/or erase the password from memory once it is no longer required. Otherwise, an attacker may be able to recover the password from memory or the disk.
 
 In all cases, it is RECOMMENDED to use a 128-bit `salt`. However, a 64-bit `salt` MAY be used if there are storage constraints. Regardless, the `salt` length SHOULD NOT vary in your protocol/application.
