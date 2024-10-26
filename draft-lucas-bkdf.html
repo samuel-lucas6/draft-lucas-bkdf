@@ -1329,10 +1329,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
           <p id="section-2-6.14.1"><code>MAX_LENGTH</code>: the maximum output length, which is 4294967295 as an integer.<a href="#section-2-6.14.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.15">
-          <p id="section-2-6.15.1"><code>MAX_PEPPER</code>: the maximum pepper length, which is 64 bytes or the maximum collision-resistant PRF key length if this is less than 64 bytes (e.g. 32 bytes).<a href="#section-2-6.15.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-2-6.16">
-          <p id="section-2-6.16.1"><code>MAX_ASSOCIATED_DATA</code>: the maximum associated data length, which is 4294967295 bytes.<a href="#section-2-6.16.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.15.1"><code>MAX_ASSOCIATED_DATA</code>: the maximum associated data length, which is 4294967295 bytes.<a href="#section-2-6.15.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1384,7 +1381,7 @@ BKDF(password, salt, spaceCost, timeCost, parallelism, length, pepper, associate
           <p id="section-3-6.7.1"><code>length</code>: the length of the password hash/derived key in bytes, which <span class="bcp14">MUST NOT</span> be greater than <code>MAX_LENGTH</code>.<a href="#section-3-6.7.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-3-6.8">
-          <p id="section-3-6.8.1"><code>pepper</code>: an optional secret key, which <span class="bcp14">MUST NOT</span> be greater than <code>MAX_PEPPER</code> bytes long.<a href="#section-3-6.8.1" class="pilcrow">¶</a></p>
+          <p id="section-3-6.8.1"><code>pepper</code>: an optional secret key, which <span class="bcp14">MUST NOT</span> be greater than <code>KEY_LEN</code> bytes long.<a href="#section-3-6.8.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-3-6.9">
           <p id="section-3-6.9.1"><code>associatedData</code>: optional context information, which <span class="bcp14">MUST NOT</span> be greater than <code>MAX_ASSOCIATED_DATA</code> bytes long.<a href="#section-3-6.9.1" class="pilcrow">¶</a></p>

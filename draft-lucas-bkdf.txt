@@ -224,10 +224,6 @@ Table of Contents
    *  MAX_LENGTH: the maximum output length, which is 4294967295 as an
       integer.
 
-   *  MAX_PEPPER: the maximum pepper length, which is 64 bytes or the
-      maximum collision-resistant PRF key length if this is less than 64
-      bytes (e.g. 32 bytes).
-
    *  MAX_ASSOCIATED_DATA: the maximum associated data length, which is
       4294967295 bytes.
 
@@ -284,7 +280,7 @@ BKDF(password, salt, spaceCost, timeCost, parallelism, length, pepper, associate
       which MUST NOT be greater than MAX_LENGTH.
 
    *  pepper: an optional secret key, which MUST NOT be greater than
-      MAX_PEPPER bytes long.
+      KEY_LEN bytes long.
 
    *  associatedData: optional context information, which MUST NOT be
       greater than MAX_ASSOCIATED_DATA bytes long.
