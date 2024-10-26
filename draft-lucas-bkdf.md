@@ -211,13 +211,14 @@ Operations:
 - `LE32(x)`: the little-endian encoding of unsigned 32-bit integer `x`.
 - `LE64(x)`: the little-endian encoding of unsigned 64-bit integer `x`.
 - `ReadLE32(a)`: the little-endian conversion of byte array `a` into an unsigned 32-bit integer.
-- `ZeroPad(a, n)`: byte array `a` padded with zeros until it is `n` bytes long.
+- `ZeroPad(a, n)`: byte array `a` padded with zeros until it is `n` bytes long. If `a` is already `n` bytes long, no padding is performed.
 - `Ceiling(x)`: the floating point `x` rounded up to the nearest whole number.
 - `UTF8(s)`: the UTF-8 {{!RFC3629}} encoding of string `s`.
 
 Constants:
 
 - `HASH_LEN`: the output length of the hash function in bytes. For an XOF, this MUST be the nearest power of 2 to the block size (e.g. 128 bytes for SHAKE128 {{FIPS202}} and 64 bytes for BLAKE3 {{BLAKE3}}).
+- `KEY_LEN`: the length of the PRF key in bytes. This MUST be the length of whichever is shortest: the hash function block size or the maximum PRF key size. For example, 128 bytes for HMAC-SHA512 and SHA-512 (the block size) but 64 bytes for BLAKE2b and 32 bytes for BLAKE3 (the maximum key parameter size).
 - `VERSION`: the version of the algorithm specified in this document, which is 1 as an integer.
 - `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
 - `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
@@ -266,11 +267,13 @@ Steps:
 outputs = BlockArray(parallelism, HASH_LEN)
 
 if pepper.Length == 0
-    key = ZeroPad(ByteArray(0), HASH_LEN)
+    key = ByteArray(0)
 else
     key = pepper
+key = ZeroPad(key, KEY_LEN)
 
 key = PRF(key, password || salt || associatedData || LE32(pepper.Length) || LE32(password.Length) || LE32(salt.Length) || LE32(associatedData.Length))
+key = ZeroPad(key, KEY_LEN)
 
 parallel for i = 0 to parallelism - 1
     outputs[i] = BalloonCore(key, spaceCost, timeCost, parallelism, i + 1)
@@ -323,7 +326,7 @@ spaceCost = 2**spaceCost
 buffer = BlockArray(spaceCost, HASH_LEN)
 
 counter = 0
-emptyKey = ZeroPad(ByteArray(0), HASH_LEN)
+emptyKey = ZeroPad(ByteArray(0), KEY_LEN)
 pseudorandom = ByteArray(0)
 reps = (spaceCost * timeCost * 3) / (HASH_LEN / 4)
 for i = 0 to reps - 1
@@ -427,7 +430,7 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
 
 Technically, only preimage resistance is required for password hashing to prevent the attacker learning information about the password from the hash. However, hash functions that are not collision resistant (e.g. MD5 {{?RFC6151}} and SHA-1 {{?RFC6194}}) MUST NOT be used. Such functions are cryptographically weak and unsuitable for new protocols.
 
-It is RECOMMENDED to either restrict password characters to ASCII {{?RFC20}} or to apply Unicode Normalization Form C (NFC) {{?RFC8265}} to the password prior to UTF-8 encoding {{!RFC3629}}. The former eliminates and the latter reduces the risk of password characters being encoded differently depending on the keyboard, operating system, and so on. Without taking these steps, a user might not always be able to log on, decrypt a file/disk, etc.
+It is RECOMMENDED to either restrict password characters to ASCII {{?RFC20}} or to apply Unicode Normalization Form C (NFC) {{?RFC8265}} to the password prior to UTF-8 encoding {{!RFC3629}}. The former eliminates and the latter reduces the risk of password characters being encoded differently depending on the keyboard, operating system, and so on. Without taking these steps, a user might not always be able to log in, decrypt a file/disk, etc.
 
 If possible, store the password in protected memory and/or erase the password from memory once it is no longer required. Otherwise, an attacker may be able to recover the password from memory or the disk.
 
