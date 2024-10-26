@@ -231,7 +231,6 @@ Constants:
 - `MIN_PARALLELISM`: the minimum parallelism, which is 1 as an integer.
 - `MAX_PARALLELISM`: the maximum parallelism, which is 16777215 as an integer.
 - `MAX_LENGTH`: the maximum output length, which is 4294967295 as an integer.
-- `MAX_PEPPER`: the maximum pepper length, which is 64 bytes or the maximum collision-resistant PRF key length if this is less than 64 bytes (e.g. 32 bytes).
 - `MAX_ASSOCIATED_DATA`: the maximum associated data length, which is 4294967295 bytes.
 
 # The BKDF Algorithm
@@ -257,7 +256,7 @@ Inputs:
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 - `parallelism`: the number of CPU cores/internal function calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
 - `length`: the length of the password hash/derived key in bytes, which MUST NOT be greater than `MAX_LENGTH`.
-- `pepper`: an optional secret key, which MUST NOT be greater than `MAX_PEPPER` bytes long.
+- `pepper`: an optional secret key, which MUST NOT be greater than `KEY_LEN` bytes long.
 - `associatedData`: optional context information, which MUST NOT be greater than `MAX_ASSOCIATED_DATA` bytes long.
 
 Outputs:
