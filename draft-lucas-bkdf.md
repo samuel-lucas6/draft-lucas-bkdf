@@ -222,6 +222,8 @@ Constants:
 - `VERSION`: the version of the algorithm specified in this document, which is 1 as an integer.
 - `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
 - `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
+- `MIN_PERSONALIZATION`: the minimum personalization length, which is 2 bytes.
+- `MAX_PERSONALIZATION`: the maximum personalization length, which is 32 bytes.
 - `MIN_SPACECOST`: the minimum space cost, which is 0 as an integer.
 - `MAX_SPACECOST`: the maximum space cost, which is 32 as an integer.
 - `MIN_TIMECOST`: the minimum time cost, which is 1 as an integer.
@@ -250,6 +252,7 @@ Inputs:
 
 - `password`: the password to be hashed, which MUST NOT be greater than `MAX_PASSWORD` bytes long.
 - `salt`: the unique and non-secret salt, which MUST NOT be greater than `MAX_SALT` bytes long.
+- `personalization`: the hardcoded, globally unique, and application-specific personalization string for the entire database/application, which MUST be between `MIN_PERSONALIZATION` and `MAX_PERSONALIZATION` bytes long.
 - `spaceCost`: the memory size in `2**spaceCost` blocks, where a block is `HASH_LEN` bytes long. It MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST`.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 - `parallelism`: the number of CPU cores/internal function calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
@@ -272,11 +275,11 @@ else
     key = pepper
 key = ZeroPad(key, KEY_LEN)
 
-key = PRF(key, password || salt || associatedData || LE32(pepper.Length) || LE32(password.Length) || LE32(salt.Length) || LE32(associatedData.Length))
+key = PRF(key, password || salt || personalization || associatedData || LE32(pepper.Length) || LE32(password.Length) || LE32(salt.Length) || LE32(personalization.Length) || LE32(associatedData.Length))
 key = ZeroPad(key, KEY_LEN)
 
 parallel for i = 0 to parallelism - 1
-    outputs[i] = BalloonCore(key, spaceCost, timeCost, parallelism, i + 1)
+    outputs[i] = BalloonCore(key, personalization, spaceCost, timeCost, parallelism, i + 1)
 
 hash = ByteArray(HASH_LEN)
 foreach output in outputs
@@ -297,7 +300,7 @@ return result.Slice(0, length)
 # The BalloonCore Function
 
 ~~~
-BalloonCore(key, spaceCost, timeCost, parallelism, iteration)
+BalloonCore(key, personalization, spaceCost, timeCost, parallelism, iteration)
 ~~~
 
 The BalloonCore function is the internal function used by BKDF for memory hardness. It can be divided into four steps:
@@ -310,6 +313,7 @@ The BalloonCore function is the internal function used by BKDF for memory hardne
 Inputs:
 
 - `key`: the key from the BKDF algorithm.
+- `personalization`: the personalization provided to the BKDF algorithm.
 - `spaceCost`: the space cost provided to the BKDF algorithm.
 - `timeCost`: the time cost provided to the BKDF algorithm.
 - `parallelism`: the parallelism provided to the BKDF algorithm.
@@ -330,7 +334,7 @@ emptyKey = ZeroPad(ByteArray(0), KEY_LEN)
 pseudorandom = ByteArray(0)
 reps = (spaceCost * timeCost * 3) / (HASH_LEN / 4)
 for i = 0 to reps - 1
-    pseudorandom = pseudorandom || PRF(emptyKey, LE64(counter++) || LE32(VERSION) || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
+    pseudorandom = pseudorandom || PRF(emptyKey, LE64(counter++) || LE32(VERSION) || personalization || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
 
 buffer[0] = PRF(key, LE64(counter++) || LE32(VERSION) ||  LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
 for m = 1 to spaceCost - 1
@@ -439,6 +443,8 @@ In all cases, it is RECOMMENDED to use a 128-bit `salt`. However, a 64-bit `salt
 The salt MUST be unique each time you call the function unless verifying a password hash or deriving the same key. It SHOULD be randomly generated using a cryptographically secure pseudorandom number generator (CSPRNG). However, it MAY be deterministic and predictable if random generation is not possible.
 
 The salt SHOULD be considered a non-secret value. It SHOULD be stored alongside the password hash for password hashing (see {{encoding-password-hashes}}) or in something like a file header for key derivation. If you have a secret key, the password hash SHOULD be encrypted or the `pepper` parameter SHOULD be used, as described below.
+
+The `personalization` parameter MUST be a hardcoded, globally unique, and application-specific string for your entire database/application. A good default format is `UTF8("[application name] [Unix epoch]")`. This binds the buffer, memory access pattern, and output to your application even if multiple applications have the same name, which helps hinder attackers. It MUST NOT be unique per user in the database/application; that is the purpose of the salt.
 
 The `spaceCost`, `timeCost`, and `parallelism` parameters MUST be carefully chosen to avoid denial-of-service and user frustration whilst ensuring adequate protection against password cracking. See {{choosing-the-cost-parameters}} for more information about choosing these parameters.
 
