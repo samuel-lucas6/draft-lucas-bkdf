@@ -282,10 +282,10 @@ foreach output in outputs
 
 counter = 1
 reps = Ceiling(length / HASH_LEN)
-previous = ByteArray(0)
+previous = hash
 result = ByteArray(0)
 for i = 0 to reps
-    previous = PRF(key, previous || LE32(counter++) || UTF8("bkdf") || hash)
+    previous = PRF(key, previous || LE32(counter++) || UTF8("bkdf"))
     result = result || previous
 
 return result.Slice(0, length)
