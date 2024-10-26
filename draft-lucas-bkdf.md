@@ -557,4 +557,5 @@ The original version of Balloon was designed by Dan Boneh, Henry Corrigan-Gibbs,
 We would like to thank the following individuals for their contributions:
 
 - Henry Corrigan-Gibbs and Steve Thomas for their help with the new design and feedback on this document.
+- Jeremiah Blocki and rmlibre for explaining the pros and cons of having the memory access pattern depend on the salt.
 - daxpedda for highlighting the importance of supporting serial parallelism.
