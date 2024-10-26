@@ -4,8 +4,8 @@
 
 Network Working Group                                           S. Lucas
 Internet-Draft                                    Individual Contributor
-Intended status: Informational                            5 October 2024
-Expires: 8 April 2025
+Intended status: Informational                           26 October 2024
+Expires: 29 April 2025
 
 
                  Balloon Key Derivation Function (BKDF)
@@ -46,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 April 2025.
+   This Internet-Draft will expire on 29 April 2025.
 
 Copyright Notice
 
@@ -297,10 +297,10 @@ foreach output in outputs
 
 counter = 1
 reps = Ceiling(length / HASH_LEN)
-previous = ByteArray(0)
+previous = hash
 result = ByteArray(0)
 for i = 0 to reps
-    previous = PRF(key, previous || LE32(counter++) || UTF8("bkdf") || hash)
+    previous = PRF(key, previous || LE32(counter++) || UTF8("bkdf"))
     result = result || previous
 
 return result.Slice(0, length)
