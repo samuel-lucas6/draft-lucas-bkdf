@@ -289,7 +289,7 @@ counter = 1
 reps = Ceiling(length / HASH_LEN)
 previous = hash
 result = ByteArray(0)
-for i = 0 to reps
+for i = 0 to reps - 1
     previous = PRF(key, previous || LE32(counter++) || UTF8("bkdf"))
     result = result || previous
 
