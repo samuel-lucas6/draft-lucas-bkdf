@@ -199,8 +199,9 @@ Throughout this document, "byte" refers to the same unit as "octet", namely an 8
 Operations:
 
 - `x++`: incrementing the integer `x` by 1 after it has been used in a function.
+- `x ** y`: integer `x` to the power of `y`.
+- `x % y`: the remainder when dividing `x` by `y`.
 - `a ^ b`: the bitwise XOR of `a` and `b`.
-- `a % b`: the remainder when dividing `a` by `b`.
 - `a || b`: the concatenation of `a` and `b`.
 - `a[i]`: index `i` of array `a`.
 - `a.Length`: the length of `a` in bytes.
@@ -252,7 +253,7 @@ Inputs:
 - `password`: the password to be hashed, which MUST NOT be greater than `MAX_PASSWORD` bytes long.
 - `salt`: the unique and non-secret salt, which MUST NOT be greater than `MAX_SALT` bytes long.
 - `personalization`: the hardcoded, globally unique, and application-specific personalization string for the entire database/application, which MUST be between `MIN_PERSONALIZATION` and `MAX_PERSONALIZATION` bytes long.
-- `spaceCost`: the memory size in `2**spaceCost` blocks, where a block is `HASH_LEN` bytes long. It MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST`.
+- `spaceCost`: the memory size in `2 ** spaceCost` blocks, where a block is `HASH_LEN` bytes long. It MUST be an integer between `MIN_SPACECOST` and `MAX_SPACECOST`.
 - `timeCost`: the number of rounds, which MUST be an integer between `MIN_TIMECOST` and `MAX_TIMECOST`.
 - `parallelism`: the number of CPU cores/internal function calls in parallel, which MUST be an integer between `MIN_PARALLELISM` and `MAX_PARALLELISM`.
 - `length`: the length of the password hash/derived key in bytes, which MUST NOT be greater than `MAX_LENGTH`.
@@ -325,7 +326,7 @@ Outputs:
 Steps:
 
 ~~~
-spaceCost = 2**spaceCost
+spaceCost = 2 ** spaceCost
 buffer = BlockArray(spaceCost, HASH_LEN)
 
 counter = 0
