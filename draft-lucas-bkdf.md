@@ -366,7 +366,7 @@ There are several ways to optimise the pseudocode, which is written for readabil
 - Instead of `Ceiling(length / HASH_LEN)`, one can do `(length + HASH_LEN - 1) / HASH_LEN`.
 - Convert constants/unchanging values to bytes once rather than in each loop iteration or in multiple loops.
 - Use an incremental hash function API rather than manual concatenation.
-- If possible with the hash function API, cache the hash function state after processing the key so it does not need to be processed again.
+- If possible with the hash function API, cache the hash function state after processing fixed values (e.g. the key) so they do not need to be processed again.
 
 # Choosing the Hash Function
 
