@@ -236,12 +236,12 @@ Constants:
 # The BKDF Algorithm
 
 ~~~
-BKDF(password, salt, spaceCost, timeCost, parallelism, length, pepper, associatedData)
+BKDF(password, salt, personalization, spaceCost, timeCost, parallelism, length, pepper, associatedData)
 ~~~
 
 BKDF calls an internal function that provides memory hardness in a way that supports parallelism and then produces a variable-length output. It can be divided into three steps:
 
-1. KDF Extract: a key is derived from the password, salt, pepper, and associated data.
+1. KDF Extract: a key is derived from the password, salt, personalization, pepper, and associated data.
 2. Parallelism: the internal function, which uses the derived key as well as other user-provided parameters, is called in parallel, and the outputs are XORed together.
 3. KDF Expand: a KDF in feedback mode is used to derive key material for the user from the derived key, context information, and the XORed outputs.
 
@@ -335,7 +335,7 @@ reps = (spaceCost * timeCost * 3) / (HASH_LEN / 4)
 for i = 0 to reps - 1
     pseudorandom = pseudorandom || PRF(emptyKey, LE64(counter++) || LE32(VERSION) || personalization || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
 
-buffer[0] = PRF(key, LE64(counter++) || LE32(VERSION) ||  LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
+buffer[0] = PRF(key, LE64(counter++) || LE32(VERSION) || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
 for m = 1 to spaceCost - 1
     buffer[m] = PRF(key, LE64(counter++) || buffer[m - 1])
 
