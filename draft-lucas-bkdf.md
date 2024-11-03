@@ -291,7 +291,7 @@ reps = Ceiling(length / HASH_LEN)
 previous = hash
 result = ByteArray(0)
 for i = 0 to reps - 1
-    previous = PRF(key, previous || LE32(counter++) || UTF8("bkdf"))
+    previous = PRF(key, previous || UTF8("bkdf") || LE32(counter++))
     result = result || previous
 
 return result.Slice(0, length)
@@ -334,11 +334,11 @@ emptyKey = ZeroPad(ByteArray(0), KEY_LEN)
 pseudorandom = ByteArray(0)
 reps = (spaceCost * timeCost * 3) / (HASH_LEN / 4)
 for i = 0 to reps - 1
-    pseudorandom = pseudorandom || PRF(emptyKey, LE64(counter++) || LE32(VERSION) || personalization || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
+    pseudorandom = pseudorandom || PRF(emptyKey, LE32(VERSION) || personalization || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration) || LE64(counter++))
 
-buffer[0] = PRF(key, LE64(counter++) || LE32(VERSION) || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration))
+buffer[0] = PRF(key, LE32(VERSION) || LE32(spaceCost) || LE32(timeCost) || LE32(parallelism) || LE32(iteration) || LE64(counter++))
 for m = 1 to spaceCost - 1
-    buffer[m] = PRF(key, LE64(counter++) || buffer[m - 1])
+    buffer[m] = PRF(key, buffer[m - 1] || LE64(counter++))
 
 offset = 0
 previous = buffer[spaceCost - 1]
@@ -347,7 +347,7 @@ for t = 0 to timeCost - 1
         other1 = ReadLE32(pseudorandom.Slice(offset, 4)) % spaceCost
         other2 = ReadLE32(pseudorandom.Slice(offset + 4, 4)) % spaceCost
         other3 = ReadLE32(pseudorandom.Slice(offset + 8, 4)) % spaceCost
-        buffer[m] = PRF(key, LE64(counter++) || previous || buffer[m] || buffer[other1] || buffer[other2] || buffer[other3])
+        buffer[m] = PRF(key, previous || buffer[m] || buffer[other1] || buffer[other2] || buffer[other3] || LE64(counter++))
         previous = buffer[m]
         offset = offset + 12
 
