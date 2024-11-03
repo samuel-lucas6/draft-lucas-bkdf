@@ -423,8 +423,8 @@ return previous
       concatenation.
 
    *  If possible with the hash function API, cache the hash function
-      state after processing the key so it does not need to be processed
-      again.
+      state after processing fixed values (e.g. the key) so they do not
+      need to be processed again.
 
 6.  Choosing the Hash Function
 
