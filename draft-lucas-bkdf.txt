@@ -206,7 +206,7 @@ Table of Contents
       2 bytes.
 
    *  MAX_PERSONALIZATION: the maximum personalization length, which is
-      32 bytes.
+      4294967295 bytes.
 
    *  MIN_SPACECOST: the minimum space cost, which is 0 as an integer.
 
@@ -595,11 +595,10 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
 
    The personalization parameter MUST be a hardcoded, globally unique,
    and application-specific string for your entire database/application.
-   A good default format is UTF8("[application name] [commit timestamp]
-   [purpose]"), where the timestamp is the Unix epoch and the purpose is
-   "kdf" or "ph" to distinguish between key derivation and password
-   hashing.  This binds the buffer, memory access pattern, and output to
-   your application even if multiple applications have the same name,
+   A good default format is UTF8("[application] [commit timestamp]
+   [purpose]").  For instance, "example.com 2024-11-03 14:36:48 password
+   hashing".  This binds the buffer, memory access pattern, and output
+   to your application even if multiple applications have the same name,
    which helps hinder attackers.  It MUST NOT be unique per user in the
    database/application; that is the purpose of the salt.
 
