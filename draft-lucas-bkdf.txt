@@ -670,6 +670,12 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
    massively parallel attack; it only protects against the two attacks
    separately.
 
+   The approach to parallelism is subject to a tradeoff, namely an
+   adversary can do sequential calls to the BalloonCore function to
+   avoid increasing the memory usage, keeping the time-area product
+   constant.  This is deemed acceptable because parallelism is often not
+   used in practice and avoiding this would complicate the design.
+
    Unlike password hashing algorithms such as bcrypt [PM99], which
    perform many small and fast pseudorandom reads, BKDF is not cache-
    hard.  Whilst there are no known publications on cache-hardness at
