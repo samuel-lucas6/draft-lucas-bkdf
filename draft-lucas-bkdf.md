@@ -224,7 +224,7 @@ Constants:
 - `MAX_PASSWORD`: the maximum password length, which is 4294967295 bytes.
 - `MAX_SALT`: the maximum salt length, which is 4294967295 bytes.
 - `MIN_PERSONALIZATION`: the minimum personalization length, which is 2 bytes.
-- `MAX_PERSONALIZATION`: the maximum personalization length, which is 32 bytes.
+- `MAX_PERSONALIZATION`: the maximum personalization length, which is 4294967295 bytes.
 - `MIN_SPACECOST`: the minimum space cost, which is 0 as an integer.
 - `MAX_SPACECOST`: the maximum space cost, which is 32 as an integer.
 - `MIN_TIMECOST`: the minimum time cost, which is 1 as an integer.
@@ -444,7 +444,7 @@ The salt MUST be unique each time you call the function unless verifying a passw
 
 The salt SHOULD be considered a non-secret value. It SHOULD be stored alongside the password hash for password hashing (see {{encoding-password-hashes}}) or in something like a file header for key derivation. If you have a secret key, the password hash SHOULD be encrypted or the `pepper` parameter SHOULD be used, as described below.
 
-The `personalization` parameter MUST be a hardcoded, globally unique, and application-specific string for your entire database/application. A good default format is `UTF8("[application name] [commit timestamp] [purpose]")`, where the timestamp is the Unix epoch and the purpose is `"kdf"` or `"ph"` to distinguish between key derivation and password hashing. This binds the buffer, memory access pattern, and output to your application even if multiple applications have the same name, which helps hinder attackers. It MUST NOT be unique per user in the database/application; that is the purpose of the salt.
+The `personalization` parameter MUST be a hardcoded, globally unique, and application-specific string for your entire database/application. A good default format is `UTF8("[application] [commit timestamp] [purpose]")`. For instance, `"example.com 2024-11-03 14:36:48 password hashing"`. This binds the buffer, memory access pattern, and output to your application even if multiple applications have the same name, which helps hinder attackers. It MUST NOT be unique per user in the database/application; that is the purpose of the salt.
 
 The `spaceCost`, `timeCost`, and `parallelism` parameters MUST be carefully chosen to avoid denial-of-service and user frustration whilst ensuring adequate protection against password cracking. See {{choosing-the-cost-parameters}} for more information about choosing these parameters.
 
