@@ -138,9 +138,11 @@ Table of Contents
    *  x++: incrementing the integer x by 1 after it has been used in a
       function.
 
-   *  a ^ b: the bitwise XOR of a and b.
+   *  x ** y: integer x to the power of y.
 
-   *  a % b: the remainder when dividing a by b.
+   *  x % y: the remainder when dividing x by y.
+
+   *  a ^ b: the bitwise XOR of a and b.
 
    *  a || b: the concatenation of a and b.
 
@@ -265,7 +267,7 @@ BKDF(password, salt, personalization, spaceCost, timeCost, parallelism, length, 
       application, which MUST be between MIN_PERSONALIZATION and
       MAX_PERSONALIZATION bytes long.
 
-   *  spaceCost: the memory size in 2**spaceCost blocks, where a block
+   *  spaceCost: the memory size in 2 ** spaceCost blocks, where a block
       is HASH_LEN bytes long.  It MUST be an integer between
       MIN_SPACECOST and MAX_SPACECOST.
 
@@ -364,7 +366,7 @@ BalloonCore(key, personalization, spaceCost, timeCost, parallelism, iteration)
 
    Steps:
 
-spaceCost = 2**spaceCost
+spaceCost = 2 ** spaceCost
 buffer = BlockArray(spaceCost, HASH_LEN)
 
 counter = 0
