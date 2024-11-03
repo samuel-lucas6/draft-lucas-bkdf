@@ -470,6 +470,8 @@ Balloon has been proven sequentially memory-hard in the random-oracle model and 
 
 To improve resistance against parallel attacks, the output can be fed into a password hashing algorithm with a password-dependent memory access pattern, such as scrypt {{?RFC7914}} or Argon2d {{?RFC9106}}. The performance penalty of this approach is like increasing the `timeCost` {{BCS16}}. However, even this does not defend against an attacker who can both a) obtain memory access pattern information and b) perform a massively parallel attack; it only protects against the two attacks separately.
 
+The approach to parallelism is subject to a tradeoff, namely an adversary can do sequential calls to the BalloonCore function to avoid increasing the memory usage, keeping the time-area product constant. This is deemed acceptable because parallelism is often not used in practice and avoiding this would complicate the design.
+
 Unlike password hashing algorithms such as bcrypt {{PM99}}, which perform many small and fast pseudorandom reads, BKDF is not cache-hard. Whilst there are no known publications on cache-hardness at the time of writing, it is reported to provide better GPU resistance than memory-hardness for shorter delays (e.g. < 1000 ms). This is because such algorithms force GPUs to use less memory bandwidth because of their large bus width (typically 256 to 1024 bits). This makes cache-hard algorithms ideal for authentication scenarios but potentially less suited for key derivation.
 
 Third-party analysis of Balloon can be found in {{RD16}}, {{AB17}}, {{ABP17}}, and {{RD17}}. However, note that there are multiple versions of Balloon, and none of these papers have analysed BKDF.
