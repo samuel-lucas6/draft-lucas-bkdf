@@ -195,7 +195,7 @@ BKDF is a memory-hard password hashing and password-based key derivation functio
 | Associated data      | No     | No     | No     | Yes     | Yes  |
 | Personalization      | No     | No     | No     | No      | Yes  |
 
-In sum, it shares many features with Argon2 {{?RFC9106}}, the PHC winner, whilst being more of a spiritual successor to PBKDF2 {{?8018}}. Namely, the design is simple and supports any collision-resistant PRF, hash function, or XOF, allowing easy implementation with existing APIs and NIST approved functions to be used.
+In sum, it shares many features with Argon2 {{?RFC9106}}, the PHC winner, whilst being more of a spiritual successor to PBKDF2 {{?RFC8018}}. Namely, the design is simple and supports any collision-resistant PRF, hash function, or XOF, allowing easy implementation with existing APIs and NIST approved functions to be used.
 
 ## Comparison to Balloon
 
