@@ -177,16 +177,33 @@ This document specifies the Balloon key derivation function (BKDF) for password 
 
 # Introduction
 
-BKDF is a memory-hard password hashing and password-based key derivation function based on Balloon {{BCS16}}, an algorithm published shortly after the Password Hashing Competition (PHC). It has several advantages over prior password hashing algorithms:
+BKDF is a memory-hard password hashing and password-based key derivation function based on Balloon {{BCS16}}, an algorithm published shortly after the Password Hashing Competition (PHC). Here is how it compares to prior password hashing algorithms that are widely used in practice:
 
-- It has proven memory-hardness properties, making it resistant against sequential GPU/ASIC attacks. An adversary trying to save space pays a large penalty in computation time.
-- It can be instantiated with any collision-resistant PRF, hash function, or XOF, making it a mode of operation for these existing algorithms. No new, unstudied primitives are required.
-- It uses a password-independent memory access pattern, making it resistant to cache-timing attacks. This property is especially relevant in cloud computing environments where multiple users can share the same physical machine.
-- It is intuitive to understand and easy to implement, which reduces the risk of implementation mistakes.
+|                      | PBKDF2 | bcrypt | scrypt | Argon2  | BKDF |
+|:--------------------:|:------:|:------:|:------:|:-------:|:----:|
+| Memory-hard          | No     | No     | Yes    | Yes     | Yes  |
+| Cache-hard           | No     | Yes    | No     | No      | No   |
+| Parallelism          | No     | No     | Yes    | Yes     | Yes  |
+| Resists cache-timing | N/A    | No     | No     | Depends | Yes  |
+| Single primitive     | Yes    | Yes    | No     | No      | Yes  |
+| Mode of operation    | Yes    | No     | No     | No      | Yes  |
+| Intuitive design     | No     | No     | No     | No      | Yes  |
+| No variants          | Yes    | Yes    | Yes    | No      | Yes  |
+| Key derivation       | Yes    | No     | Yes    | Yes     | Yes  |
+| Separate memory/time | No     | No     | No     | Yes     | Yes  |
+| Pepper               | No     | No     | No     | Yes     | Yes  |
+| Associated data      | No     | No     | No     | Yes     | Yes  |
+| Personalization      | No     | No     | No     | No      | Yes  |
 
-BKDF exists because the Balloon paper does not fully specify the algorithm, the algorithm was not designed with key derivation in mind, and there are multiple variants.
+In sum, it shares many features with Argon2 {{?RFC9106}}, the PHC winner, whilst being more of a spiritual successor to PBKDF2 {{?8018}}. Namely, the design is simple and supports any collision-resistant PRF, hash function, or XOF, allowing easy implementation with existing APIs and NIST approved functions to be used.
 
-This document rectifies these issues and more by specifying an encoding, preventing canonicalization attacks, improving domain separation, not computing the memory accesses from the salt, fixing the modulo bias, making delta a constant, treating Balloon and Balloon-M as one algorithm, adding support for key derivation, adding support for a pepper and associated data, adding support for keyed hashing like HMAC {{!RFC2104}}, and improving the performance.
+## Comparison to Balloon
+
+BKDF exists because the Balloon paper does not fully specify the algorithm, the performance is suboptimal, there are anonymity/security issues with the design, there are multiple variants, and functionality like support for key derivation is missing. These factors have limited its adoption and led to incompatible implementations.
+
+This document rectifies these issues and more by improving the performance, specifying an encoding, preventing canonicalization attacks, improving domain separation, not computing the memory access pattern from the salt, fixing the modulo bias, making delta a constant, treating Balloon and Balloon-M as one algorithm, and adding support for key derivation, a pepper, associated data, a personalization string, and keyed hashing like HMAC {{!RFC2104}}.
+
+Importantly, the approach to memory hardness remains the same, meaning such analyses of Balloon should transfer to BKDF. Furthermore, the security of collision-resistant hash functions that will be used in BKDF is well understood. Therefore, assuming these functions are being used correctly, the design is secure.
 
 Note that this document is not an IETF product and is not a standard.
 
