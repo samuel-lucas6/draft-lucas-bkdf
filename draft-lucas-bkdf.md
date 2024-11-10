@@ -481,7 +481,7 @@ Importantly, if multiple values are concatenated to form the `associatedData` pa
 
 ## Security Guarantees
 
-The security properties of BKDF depend on the chosen collision-resistant hash function. For example, a 256-bit hash typically provides 128-bit collision resistance and 256-bit (second) preimage resistance.
+The security properties of BKDF depend on the chosen collision-resistant hash function. For example, a 256-bit hash typically provides 128-bit collision resistance and 128- or 256-bit (second) preimage resistance.
 
 Balloon has been proven sequentially memory-hard in the random-oracle model and uses a password-independent memory access pattern to prevent side-channel attacks leaking information about the password {{BCS16}}. However, no function that uses a password-independent memory access pattern can be optimally memory-hard in the parallel setting {{AB16}}.
 
