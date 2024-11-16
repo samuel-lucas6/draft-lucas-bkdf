@@ -71,6 +71,29 @@ informative:
         org: The OpenBSD Project
     date: 1999
 
+  FLLW15:
+    title: "Overview of the Candidates for the Password Hashing Competition"
+    rc: "Technology and Practice of Passwords. PASSWORDS 2014. Lecture Notes in Computer Science(), vol 9393, pp. 3–18"
+    target: https://doi.org/10.1007/978-3-319-24192-0_1
+    author:
+      -
+        ins: C. Forler
+        name: Christian Forler
+        org: Bauhaus-Universität Weimar
+      -
+        ins: E. List
+        name: Eik List
+        org: Bauhaus-Universität Weimar
+      -
+        ins: S. Lucks
+        name: Stefan Lucks
+        org: Bauhaus-Universität Weimar
+      -
+        ins: J. Wenzel
+        name: Jakob Wenzel
+        org: Bauhaus-Universität Weimar
+    date: 2015
+
   BCS16:
     title: "Balloon Hashing: A Memory-Hard Function Providing Provable Protection Against Sequential Attacks"
     rc: "Cryptology ePrint Archive, Paper 2016/027"
@@ -486,6 +509,8 @@ The security properties of BKDF depend on the chosen collision-resistant hash fu
 Balloon has been proven sequentially memory-hard in the random-oracle model, making it resistant against sequential GPU/ASIC attacks {{BCS16}}. An adversary trying to save space pays a large penalty in computation time.
 
 Balloon also uses a password-independent memory access pattern to prevent side-channel attacks leaking information about the password {{BCS16}}. This property is especially relevant in cloud computing environments where multiple users can share the same physical machine. However, no function that uses a password-independent memory access pattern can be optimally memory-hard in the parallel setting.
+
+BKDF is not vulnerable to garbage-collector attacks since the internal state is overwritten {{FLLW15}}. However, it can be vulnerable to weak garbage-collector attacks because the key derived from the password is kept in memory throughout the algorithm. Even if you cache the hash function state after processing the key and zero the key, this attack is still possible. The only prevention is to use a pepper and zero that from memory immediately after processing it. With that said, the password is likely to remain in memory anyway, rendering this attack unnecessary.
 
 The approach to parallelism is subject to a tradeoff, namely an adversary can do sequential calls to the BalloonCore function to avoid increasing the memory usage, keeping the time-area product constant. This is deemed acceptable because parallelism is often not used in practice and avoiding this would complicate the design.
 
