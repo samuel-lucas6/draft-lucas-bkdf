@@ -1081,7 +1081,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Lucas</td>
-<td class="center">Expires 14 May 2025</td>
+<td class="center">Expires 20 May 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1094,12 +1094,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-lucas-bkdf-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-11-10" class="published">10 November 2024</time>
+<time datetime="2024-11-16" class="published">16 November 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-05-14">14 May 2025</time></dd>
+<dd class="expires"><time datetime="2025-05-20">20 May 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1144,7 +1144,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 14 May 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 20 May 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1870,9 +1870,10 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
 <p id="section-9.2-1">The security properties of BKDF depend on the chosen collision-resistant hash function. For example, a 256-bit hash typically provides 128-bit collision resistance and 128- or 256-bit (second) preimage resistance.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
 <p id="section-9.2-2">Balloon has been proven sequentially memory-hard in the random-oracle model, making it resistant against sequential GPU/ASIC attacks <span>[<a href="#BCS16" class="cite xref">BCS16</a>]</span>. An adversary trying to save space pays a large penalty in computation time.<a href="#section-9.2-2" class="pilcrow">¶</a></p>
 <p id="section-9.2-3">Balloon also uses a password-independent memory access pattern to prevent side-channel attacks leaking information about the password <span>[<a href="#BCS16" class="cite xref">BCS16</a>]</span>. This property is especially relevant in cloud computing environments where multiple users can share the same physical machine. However, no function that uses a password-independent memory access pattern can be optimally memory-hard in the parallel setting.<a href="#section-9.2-3" class="pilcrow">¶</a></p>
-<p id="section-9.2-4">The approach to parallelism is subject to a tradeoff, namely an adversary can do sequential calls to the BalloonCore function to avoid increasing the memory usage, keeping the time-area product constant. This is deemed acceptable because parallelism is often not used in practice and avoiding this would complicate the design.<a href="#section-9.2-4" class="pilcrow">¶</a></p>
-<p id="section-9.2-5">Unlike password hashing algorithms such as bcrypt <span>[<a href="#PM99" class="cite xref">PM99</a>]</span>, which perform many small and fast pseudorandom reads, BKDF is not cache-hard. Whilst there are no known publications on cache-hardness at the time of writing, it is reported to provide better GPU resistance than memory-hardness for shorter delays (e.g. &lt; 1000 ms). This is because such algorithms force GPUs to use less memory bandwidth because of their large bus width (typically 256 to 1024 bits). Assuming GPUs are primarily used for password cracking, this makes cache-hard algorithms ideal for authentication scenarios especially.<a href="#section-9.2-5" class="pilcrow">¶</a></p>
-<p id="section-9.2-6">Third-party analysis of Balloon can be found in <span>[<a href="#RD16" class="cite xref">RD16</a>]</span>, <span>[<a href="#AB17" class="cite xref">AB17</a>]</span>, <span>[<a href="#ABP17" class="cite xref">ABP17</a>]</span>, and <span>[<a href="#RD17" class="cite xref">RD17</a>]</span>. However, note that there are multiple versions of Balloon, and none of these papers have analysed BKDF.<a href="#section-9.2-6" class="pilcrow">¶</a></p>
+<p id="section-9.2-4">BKDF is not vulnerable to garbage-collector attacks since the internal state is overwritten <span>[<a href="#FLLW15" class="cite xref">FLLW15</a>]</span>. However, it can be vulnerable to weak garbage-collector attacks because the key derived from the password is kept in memory throughout the algorithm. Even if you cache the hash function state after processing the key and zero the key, this attack is still possible. The only prevention is to use a pepper and zero that from memory immediately after processing it. With that said, the password is likely to remain in memory anyway, rendering this attack unnecessary.<a href="#section-9.2-4" class="pilcrow">¶</a></p>
+<p id="section-9.2-5">The approach to parallelism is subject to a tradeoff, namely an adversary can do sequential calls to the BalloonCore function to avoid increasing the memory usage, keeping the time-area product constant. This is deemed acceptable because parallelism is often not used in practice and avoiding this would complicate the design.<a href="#section-9.2-5" class="pilcrow">¶</a></p>
+<p id="section-9.2-6">Unlike password hashing algorithms such as bcrypt <span>[<a href="#PM99" class="cite xref">PM99</a>]</span>, which perform many small and fast pseudorandom reads, BKDF is not cache-hard. Whilst there are no known publications on cache-hardness at the time of writing, it is reported to provide better GPU resistance than memory-hardness for shorter delays (e.g. &lt; 1000 ms). This is because such algorithms force GPUs to use less memory bandwidth because of their large bus width (typically 256 to 1024 bits). Assuming GPUs are primarily used for password cracking, this makes cache-hard algorithms ideal for authentication scenarios especially.<a href="#section-9.2-6" class="pilcrow">¶</a></p>
+<p id="section-9.2-7">Third-party analysis of Balloon can be found in <span>[<a href="#RD16" class="cite xref">RD16</a>]</span>, <span>[<a href="#AB17" class="cite xref">AB17</a>]</span>, <span>[<a href="#ABP17" class="cite xref">ABP17</a>]</span>, and <span>[<a href="#RD17" class="cite xref">RD17</a>]</span>. However, note that there are multiple versions of Balloon, and none of these papers have analysed BKDF.<a href="#section-9.2-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1956,6 +1957,10 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
 <dt id="BCS16">[BCS16]</dt>
         <dd>
 <span class="refAuthor">Boneh, D.</span>, <span class="refAuthor">Corrigan-Gibbs, H.</span>, and <span class="refAuthor">S. Schechter</span>, <span class="refTitle">"Balloon Hashing: A Memory-Hard Function Providing Provable Protection Against Sequential Attacks"</span>, <span class="refContent">Cryptology ePrint Archive, Paper 2016/027</span>, <time datetime="2016" class="refDate">2016</time>, <span>&lt;<a href="https://eprint.iacr.org/2016/027">https://eprint.iacr.org/2016/027</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="FLLW15">[FLLW15]</dt>
+        <dd>
+<span class="refAuthor">Forler, C.</span>, <span class="refAuthor">List, E.</span>, <span class="refAuthor">Lucks, S.</span>, and <span class="refAuthor">J. Wenzel</span>, <span class="refTitle">"Overview of the Candidates for the Password Hashing Competition"</span>, <span class="refContent">Technology and Practice of Passwords. PASSWORDS 2014. Lecture Notes in Computer Science(), vol 9393, pp. 3–18</span>, <time datetime="2015" class="refDate">2015</time>, <span>&lt;<a href="https://doi.org/10.1007/978-3-319-24192-0_1">https://doi.org/10.1007/978-3-319-24192-0_1</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="PM99">[PM99]</dt>
         <dd>

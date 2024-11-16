@@ -4,8 +4,8 @@
 
 Network Working Group                                           S. Lucas
 Internet-Draft                                    Individual Contributor
-Intended status: Informational                          10 November 2024
-Expires: 14 May 2025
+Intended status: Informational                          16 November 2024
+Expires: 20 May 2025
 
 
                  Balloon Key Derivation Function (BKDF)
@@ -46,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 14 May 2025.
+   This Internet-Draft will expire on 20 May 2025.
 
 Copyright Notice
 
@@ -702,6 +702,16 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
    memory access pattern can be optimally memory-hard in the parallel
    setting.
 
+   BKDF is not vulnerable to garbage-collector attacks since the
+   internal state is overwritten [FLLW15].  However, it can be
+   vulnerable to weak garbage-collector attacks because the key derived
+   from the password is kept in memory throughout the algorithm.  Even
+   if you cache the hash function state after processing the key and
+   zero the key, this attack is still possible.  The only prevention is
+   to use a pepper and zero that from memory immediately after
+   processing it.  With that said, the password is likely to remain in
+   memory anyway, rendering this attack unnecessary.
+
    The approach to parallelism is subject to a tradeoff, namely an
    adversary can do sequential calls to the BalloonCore function to
    avoid increasing the memory usage, keeping the time-area product
@@ -797,6 +807,12 @@ $bkdf-sha256$v=1$m=32,t=3,p=1$ZXhhbXBsZXNhbHQ$cWBD3/d3tEqnuI3LqxLAeKvs+snSicW1GV
               Protection Against Sequential Attacks", Cryptology ePrint
               Archive, Paper 2016/027, 2016,
               <https://eprint.iacr.org/2016/027>.
+
+   [FLLW15]   Forler, C., List, E., Lucks, S., and J. Wenzel, "Overview
+              of the Candidates for the Password Hashing Competition",
+              Technology and Practice of Passwords. PASSWORDS 2014.
+              Lecture Notes in Computer Science(), vol 9393, pp. 3–18,
+              2015, <https://doi.org/10.1007/978-3-319-24192-0_1>.
 
    [PM99]     Provos, N. and D. Mazières, "A Future-Adaptable Password
               Scheme", Proceedings of the 1999 USENIX Annual Technical
