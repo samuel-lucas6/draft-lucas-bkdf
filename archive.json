@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-26T01:39:32.603797+00:00",
+  "timestamp": "2024-12-29T01:48:09.281219+00:00",
   "repo": "samuel-lucas6/draft-lucas-bkdf",
   "labels": [
     {
@@ -362,7 +362,7 @@
       "labels": [],
       "body": "Once the design has been finalised, these need to be updated since breaking changes have been made.",
       "createdAt": "2024-05-19T09:40:21Z",
-      "updatedAt": "2024-07-27T14:17:02Z",
+      "updatedAt": "2024-12-27T21:20:49Z",
       "closedAt": null,
       "comments": [
         {
@@ -371,6 +371,13 @@
           "body": "List of hash functions/XOFs to consider including test vectors for, with the ones to probably skip crossed out:\r\n\r\n1. ~BLAKE2s-256~\r\n2. **BLAKE2b-256**\r\n3. **BLAKE2b-512**\r\n4. ~BLAKE2X~\r\n5. **BLAKE3** (256 bit output or XOF, not both)\r\n6. ~SHA-224~\r\n7. **SHA-256**\r\n8. ~SHA-384~\r\n9. **SHA-512**\r\n10. **HMAC-SHA256**\r\n11. ~HMAC-SHA384~\r\n12. **HMAC-SHA512**\r\n17. ~SHA3-224~\r\n18. **SHA3-256**\r\n19. ~SHA3-384~\r\n20. **SHA3-512**\r\n21. ~KMAC128~\r\n22. ~KMAC256~\r\n23. ~KMACXOF128~\r\n24. ~KMACXOF256~\r\n25. **SHAKE128**\r\n14. **SHAKE256**\r\n15. ~cSHAKE128~\r\n16. ~cSHAKE256~\r\n17. ~TurboSHAKE128~\r\n18. ~TurboSHAKE256~\r\n26. **KangarooTwelve**\r\n27. ~MarsupilamiFourteen~\r\n\r\nThat's still over 10 algorithms... Got to hate how many variants there are.",
           "createdAt": "2024-07-27T14:17:02Z",
           "updatedAt": "2024-07-27T14:17:02Z"
+        },
+        {
+          "author": "jedisct1",
+          "authorAssociation": "NONE",
+          "body": "> 27. KangarooTwelve\r\n\r\nGiven that the inputs are very short, KT12 wouldn't have any advantage over TurboSHAKE, only overhead.\r\n",
+          "createdAt": "2024-12-27T21:20:48Z",
+          "updatedAt": "2024-12-27T21:20:48Z"
         }
       ]
     },
@@ -679,7 +686,7 @@
       "labels": [],
       "body": "`timeCost` is a misleading name because increasing `spaceCost` also increases the delay. Then `spaceCost` is the number of blocks when it would be more intuitive if the memory size (e.g., in bytes or KiB) was specified. This saves the user having to compute the number of blocks from their target memory size and the hash function output length. Because the weird thing at the moment is that you can have the same `spaceCost` with two different hash functions and you'll get a different memory size.\r\n\r\nThe problem is what to call these (e.g., `iterations` and `memorySize` perhaps) and how changing `spaceCost` affects the domain separation.",
       "createdAt": "2024-09-22T11:23:01Z",
-      "updatedAt": "2024-11-16T13:03:50Z",
+      "updatedAt": "2024-12-27T21:15:57Z",
       "closedAt": null,
       "comments": [
         {
@@ -695,6 +702,13 @@
           "body": "> With regard to timeCost the original paper actually calls it everywhere as \"rounds\".\r\n\r\nThe pseudocode and reference implementation use `t_cost` for time cost though.\r\n\r\n> And, at least given the cryptography context, I think its more clearer to anyone what \"rounds\" means. (Or even \"iterations\", but I think that the whole literature uses the word \"round\".)\r\n\r\nI like iterations because it matches PBKDF2. Argon2 calls it passes.\r\n\r\n> On the other side, calling something \"time\" might be misleading, because as with spaceCost, it doesn't actually translate to a physical unit, but instead the actual \"time\" depends on the spaceCost, the efficiency of the chosen hash, and hardware performance of the machine running the code.\r\n\r\nI definitely don't like `timeCost` and `spaceCost`.\r\n\r\n> However, with regard to the proposal to be expressed in MiB (or anything directly translatable into memory), is perhaps problematic because:\r\n\r\nThe issue I realised with having KiB or MiB for the memory is that it doesn't work well with the power of 2 to avoid modulo bias, so I might have to leave the memory parameter as blocks.\r\n\r\n> And finally, how about a \"radical\" approach (which seems to be the current \"best practice\") of providing a few pre-defined levels (or purposes), so that users don't shoot themselves in the foot\r\n\r\nThis isn't a good idea because of the performance difference depending on the implementation/device and how the parameters should be adjusted over time.",
           "createdAt": "2024-11-16T13:03:48Z",
           "updatedAt": "2024-11-16T13:03:48Z"
+        },
+        {
+          "author": "jedisct1",
+          "authorAssociation": "NONE",
+          "body": "> The issue I realised with having KiB or MiB for the memory is that it doesn't work well with the power of 2 to avoid modulo bias, so I might have to leave the memory parameter as blocks.\r\n\r\nThe problem here is that applications don't have a straightforward way to predict how much memory is going to be required to run the algorithm. The block size should be an internal implementation/algorithm detail, not something users have to understand to use BKDF correctly.",
+          "createdAt": "2024-12-27T21:15:56Z",
+          "updatedAt": "2024-12-27T21:15:56Z"
         }
       ]
     },
@@ -827,6 +841,60 @@
           "updatedAt": "2024-11-17T12:50:39Z"
         }
       ]
+    },
+    {
+      "number": 27,
+      "id": "I_kwDOK_bi8M6klV66",
+      "title": "Some early feedback",
+      "url": "https://github.com/samuel-lucas6/draft-lucas-bkdf/issues/27",
+      "state": "OPEN",
+      "author": "jedisct1",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Hi Samuel,\r\n\r\nIn case this is useful, here's some random early feedback.\r\n\r\nI wrote an implementation based on that document (https://github.com/jedisct1/zig-bkdf), and the test vectors didn't pass. But I may have overlooked or screwed up something.\r\nIs there a reference implementation closely matching the document somewhere?\r\n\r\nAnyway. Here are some observations.\r\n\r\n---\r\n\r\n> ByteArray(l): the creation of a new byte array with length\r\n\r\nShould that array be initialized with zeros?\r\n\r\nIn the `BKDF` steps, `hash` is not initialized:\r\n\r\n```\r\nhash = ByteArray(HASH_LEN)\r\nforeach output in outputs\r\n    for i = 0 to output.Length - 1\r\n        hash[i] = hash[i] ^ output[I]\r\n```\r\n\r\nSo, either `ByteArray` should set everything to zero, or `hash` should be set to `output[0]` and then `output[1..]` should be mixed.\r\n\r\n---\r\n\r\nI found the upper bound of the `for` loops ranges to be very confusing, as the document uses inclusive ranges, whereas programming languages generally don't. \r\n\r\n---\r\n\r\n```\r\nif pepper.Length == 0\r\n    key = ByteArray(0)\r\nelse\r\n    key = pepper\r\nkey = ZeroPad(key, KEY_LEN)\r\n```\r\n\r\nWhy the special case when the length is `0`?\r\n\r\n---\r\n\r\n```\r\nkey = PRF(key, password || salt || personalization || associatedData || LE32(pepper.Length) || LE32(password.Length) || LE32(salt.Length) || LE32(personalization.Length) || LE32(associatedData.Length))\r\n```\r\n\r\nHere, the `key` input parameter and the `key` output parameters represent different things, and have different lengths. Maybe use different names?\r\n\r\n---\r\n\r\n```\r\nspaceCost = 2 ** spaceCost\r\n```\r\n\r\nThe same variable uses different units at different places, and this is a bit confusing.\r\n\r\nMaybe rename the one representing the log2 of the space cost `spaceCostLog`?\r\n\r\n---\r\n\r\n```\r\nLE32(spaceCost)\r\n```\r\n\r\n`spaceCost` must fit in 32-bits. But `MAX_SPACECOST` is `32`, and `1<<32` would overflow.\r\n\r\nMaybe absorb `LE32(spaceCostLog)` instead of `LE32(spaceCost)`? This will also lift the 2^32 limitation.\r\n\r\n---\r\n\r\n```\r\nreps = (spaceCost * timeCost * 3) / (HASH_LEN / 4)\r\n```\r\n\r\nThis assumes that HASH_LEN is a multiple of 4. Which is the case for virtually all hash functions, but is still not universally true.\r\n\r\n---\r\n\r\nBKDF only needs a PRF. It doesn't have to be a hash-based PRF. So, maybe it would be better to use something like `PRF_OUT_LEN` rather than `HASH_LEN`?\r\n\r\n---\r\n\r\n> KEY_LEN: the length of the PRF key in bytes. This MUST be the length of whichever is shortest: the hash function block size or the maximum PRF key size. For example, 128 bytes for HMAC-SHA512 and SHA-512 (the block size) but 64 bytes for BLAKE2b and 32 bytes for BLAKE3 (the maximum key parameter size)\r\n\r\nThe test vectors use SHA256, so maybe the key length for that one should be included?\r\n\r\n---\r\n\r\nTest Vector 3:\r\n\r\n```\r\nspaceCost: 1024\r\n```\r\n\r\nHow could that test vector pass if this represents 2^1024 hash outputs?\r\n\r\n",
+      "createdAt": "2024-12-27T20:33:14Z",
+      "updatedAt": "2024-12-27T21:24:44Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "jedisct1",
+          "authorAssociation": "NONE",
+          "body": "> It is RECOMMENDED to use a collision-resistant hash function with a larger output length that is fast in software but relatively slow in hardware, such as BLAKE2b-512. As another example, SHA-512 is preferable to SHA-256.\r\n\r\nI'm not sure about the last part. Most modern CPUs have SHA-256 hardware acceleration.\r\n\r\nHowever, SHA-512 acceleration on Intel CPUs is very new (only available on Lunar Lake CPUs released 3 months ago).",
+          "createdAt": "2024-12-27T20:45:24Z",
+          "updatedAt": "2024-12-27T20:45:24Z"
+        },
+        {
+          "author": "jedisct1",
+          "authorAssociation": "NONE",
+          "body": "> HMAC [[RFC2104](https://samuellucas.com/draft-lucas-bkdf/draft-lucas-bkdf.html#RFC2104)] is also NOT RECOMMENDED because it increases the number of calls to the chosen hash function.\r\n\r\n~~The rest of the document recommends using HMAC to build a keyed hash function.~~\r\n\r\nMy bad, I overlooked this in the definitions:\r\n\r\n> if there is no key parameter (e.g. SHA-512 [[RFC6234](https://samuellucas.com/draft-lucas-bkdf/draft-lucas-bkdf.html#RFC6234)]), you MUST perform prefix MAC and pad the key with zeros to the block size (1024 bits for SHA-512)\r\n\r\nMaybe the definition of the `PRF()` could benefit from a dedicated section, that clearly explains how it's defined for hash functions, MACs and XOFs.",
+          "createdAt": "2024-12-27T20:46:27Z",
+          "updatedAt": "2024-12-27T21:24:44Z"
+        },
+        {
+          "author": "jedisct1",
+          "authorAssociation": "NONE",
+          "body": "> A smaller output length worsens the performance and memory-hardness.\r\n\r\nWhy does it worsen memory hardness ?",
+          "createdAt": "2024-12-27T20:50:33Z",
+          "updatedAt": "2024-12-27T20:50:33Z"
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "id": "I_kwDOK_bi8M6klblD",
+      "title": "Nice-to-have features",
+      "url": "https://github.com/samuel-lucas6/draft-lucas-bkdf/issues/28",
+      "state": "OPEN",
+      "author": "jedisct1",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Some nice-to-have features. That may be out of scope for that document, but that would solve some real-world problems that all the widely used password hashing algorithms have.\r\n\r\n1) Server relief. Allow the client to perform a part of the computation. In BKDF, `hash` is just the addition of the outputs of independent `BalloonCore` instantiations, so that can easily be implemented. Provided that `pepper` is empty, or can be computed as a shared secret.\r\n\r\n2) Encryption. Section 9 refers to it, but maybe it would be an opportunity to define a standard way to do it. Introducing a dependency on AEADs is not required. Encryption can be made by leveraging the PRF.\r\n\r\n3) The ability to upgrade parameters without having access to the passwords, similar to libhydrogen's [pwhash_upgrade](https://github.com/jedisct1/libhydrogen/wiki/Password-hashing#updating-the-parameters) function. That would be a killer feature. In BKDF, the only way to achieve that would be to define a way to encode the composition of multiple BKDF calls. Probably out of scope for the document. But damn, that's something that would be really amazing to have in new password hashing functions.",
+      "createdAt": "2024-12-27T21:11:03Z",
+      "updatedAt": "2024-12-27T21:11:03Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
