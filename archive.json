@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-29T01:48:09.281219+00:00",
+  "timestamp": "2024-12-31T01:39:55.107974+00:00",
   "repo": "samuel-lucas6/draft-lucas-bkdf",
   "labels": [
     {
@@ -362,7 +362,7 @@
       "labels": [],
       "body": "Once the design has been finalised, these need to be updated since breaking changes have been made.",
       "createdAt": "2024-05-19T09:40:21Z",
-      "updatedAt": "2024-12-27T21:20:49Z",
+      "updatedAt": "2024-12-29T12:07:25Z",
       "closedAt": null,
       "comments": [
         {
@@ -378,6 +378,13 @@
           "body": "> 27. KangarooTwelve\r\n\r\nGiven that the inputs are very short, KT12 wouldn't have any advantage over TurboSHAKE, only overhead.\r\n",
           "createdAt": "2024-12-27T21:20:48Z",
           "updatedAt": "2024-12-27T21:20:48Z"
+        },
+        {
+          "author": "samuel-lucas6",
+          "authorAssociation": "OWNER",
+          "body": "> Given that the inputs are very short, KT12 wouldn't have any advantage over TurboSHAKE, only overhead.\r\n\r\nThank you for this point. I haven't looked into either and didn't realise there are also two KangarooTwelve variants, so TurboSHAKE or skipping them both would be best.",
+          "createdAt": "2024-12-29T12:07:24Z",
+          "updatedAt": "2024-12-29T12:07:24Z"
         }
       ]
     },
@@ -686,7 +693,7 @@
       "labels": [],
       "body": "`timeCost` is a misleading name because increasing `spaceCost` also increases the delay. Then `spaceCost` is the number of blocks when it would be more intuitive if the memory size (e.g., in bytes or KiB) was specified. This saves the user having to compute the number of blocks from their target memory size and the hash function output length. Because the weird thing at the moment is that you can have the same `spaceCost` with two different hash functions and you'll get a different memory size.\r\n\r\nThe problem is what to call these (e.g., `iterations` and `memorySize` perhaps) and how changing `spaceCost` affects the domain separation.",
       "createdAt": "2024-09-22T11:23:01Z",
-      "updatedAt": "2024-12-27T21:15:57Z",
+      "updatedAt": "2024-12-29T12:09:20Z",
       "closedAt": null,
       "comments": [
         {
@@ -709,6 +716,13 @@
           "body": "> The issue I realised with having KiB or MiB for the memory is that it doesn't work well with the power of 2 to avoid modulo bias, so I might have to leave the memory parameter as blocks.\r\n\r\nThe problem here is that applications don't have a straightforward way to predict how much memory is going to be required to run the algorithm. The block size should be an internal implementation/algorithm detail, not something users have to understand to use BKDF correctly.",
           "createdAt": "2024-12-27T21:15:56Z",
           "updatedAt": "2024-12-27T21:15:56Z"
+        },
+        {
+          "author": "samuel-lucas6",
+          "authorAssociation": "OWNER",
+          "body": "> The problem here is that applications don't have a straightforward way to predict how much memory is going to be required to run the algorithm. The block size should be an internal implementation/algorithm detail, not something users have to understand to use BKDF correctly.\r\n\r\nYeah, I agree this should be changed. It's just how best to do it.",
+          "createdAt": "2024-12-29T12:09:19Z",
+          "updatedAt": "2024-12-29T12:09:19Z"
         }
       ]
     },
@@ -854,7 +868,7 @@
       "labels": [],
       "body": "Hi Samuel,\r\n\r\nIn case this is useful, here's some random early feedback.\r\n\r\nI wrote an implementation based on that document (https://github.com/jedisct1/zig-bkdf), and the test vectors didn't pass. But I may have overlooked or screwed up something.\r\nIs there a reference implementation closely matching the document somewhere?\r\n\r\nAnyway. Here are some observations.\r\n\r\n---\r\n\r\n> ByteArray(l): the creation of a new byte array with length\r\n\r\nShould that array be initialized with zeros?\r\n\r\nIn the `BKDF` steps, `hash` is not initialized:\r\n\r\n```\r\nhash = ByteArray(HASH_LEN)\r\nforeach output in outputs\r\n    for i = 0 to output.Length - 1\r\n        hash[i] = hash[i] ^ output[I]\r\n```\r\n\r\nSo, either `ByteArray` should set everything to zero, or `hash` should be set to `output[0]` and then `output[1..]` should be mixed.\r\n\r\n---\r\n\r\nI found the upper bound of the `for` loops ranges to be very confusing, as the document uses inclusive ranges, whereas programming languages generally don't. \r\n\r\n---\r\n\r\n```\r\nif pepper.Length == 0\r\n    key = ByteArray(0)\r\nelse\r\n    key = pepper\r\nkey = ZeroPad(key, KEY_LEN)\r\n```\r\n\r\nWhy the special case when the length is `0`?\r\n\r\n---\r\n\r\n```\r\nkey = PRF(key, password || salt || personalization || associatedData || LE32(pepper.Length) || LE32(password.Length) || LE32(salt.Length) || LE32(personalization.Length) || LE32(associatedData.Length))\r\n```\r\n\r\nHere, the `key` input parameter and the `key` output parameters represent different things, and have different lengths. Maybe use different names?\r\n\r\n---\r\n\r\n```\r\nspaceCost = 2 ** spaceCost\r\n```\r\n\r\nThe same variable uses different units at different places, and this is a bit confusing.\r\n\r\nMaybe rename the one representing the log2 of the space cost `spaceCostLog`?\r\n\r\n---\r\n\r\n```\r\nLE32(spaceCost)\r\n```\r\n\r\n`spaceCost` must fit in 32-bits. But `MAX_SPACECOST` is `32`, and `1<<32` would overflow.\r\n\r\nMaybe absorb `LE32(spaceCostLog)` instead of `LE32(spaceCost)`? This will also lift the 2^32 limitation.\r\n\r\n---\r\n\r\n```\r\nreps = (spaceCost * timeCost * 3) / (HASH_LEN / 4)\r\n```\r\n\r\nThis assumes that HASH_LEN is a multiple of 4. Which is the case for virtually all hash functions, but is still not universally true.\r\n\r\n---\r\n\r\nBKDF only needs a PRF. It doesn't have to be a hash-based PRF. So, maybe it would be better to use something like `PRF_OUT_LEN` rather than `HASH_LEN`?\r\n\r\n---\r\n\r\n> KEY_LEN: the length of the PRF key in bytes. This MUST be the length of whichever is shortest: the hash function block size or the maximum PRF key size. For example, 128 bytes for HMAC-SHA512 and SHA-512 (the block size) but 64 bytes for BLAKE2b and 32 bytes for BLAKE3 (the maximum key parameter size)\r\n\r\nThe test vectors use SHA256, so maybe the key length for that one should be included?\r\n\r\n---\r\n\r\nTest Vector 3:\r\n\r\n```\r\nspaceCost: 1024\r\n```\r\n\r\nHow could that test vector pass if this represents 2^1024 hash outputs?\r\n\r\n",
       "createdAt": "2024-12-27T20:33:14Z",
-      "updatedAt": "2024-12-27T21:24:44Z",
+      "updatedAt": "2024-12-29T12:46:10Z",
       "closedAt": null,
       "comments": [
         {
@@ -877,6 +891,13 @@
           "body": "> A smaller output length worsens the performance and memory-hardness.\r\n\r\nWhy does it worsen memory hardness ?",
           "createdAt": "2024-12-27T20:50:33Z",
           "updatedAt": "2024-12-27T20:50:33Z"
+        },
+        {
+          "author": "samuel-lucas6",
+          "authorAssociation": "OWNER",
+          "body": "> I wrote an implementation based on that document (https://github.com/jedisct1/zig-bkdf), and the test vectors didn't pass. But I may have overlooked or screwed up something.\r\n\r\nThanks Frank, that's awesome. I need to update the test vectors as they were for the Rust Crypto Balloon implementation. I was waiting until I'd finished tampering with the design.\r\n\r\n> Is there a reference implementation closely matching the document somewhere?\r\n\r\nNot yet. This is something I've been meaning to do.\r\n\r\n> Should that array be initialized with zeros?\r\n\r\nI should probably do that and then use `ZeroPad()` less.\r\n\r\n> So, either ByteArray should set everything to zero, or hash should be set to output[0] and then output[1..] should be mixed.\r\n\r\nYes, I expect the latter would be clearer.\r\n\r\n> I found the upper bound of the for loops ranges to be very confusing, as the document uses inclusive ranges, whereas programming languages generally don't.\r\n\r\nI think this is a consequence of following the paper. That sort of thing can definitely be changed.\r\n\r\n> Why the special case when the length is 0?\r\n\r\nThat was just to make it clear that it's empty, but you're right that that should probably be changed.\r\n\r\n> Here, the key input parameter and the key output parameters represent different things, and have different lengths. Maybe use different names?\r\n\r\nYeah, I will look into that. I think I was trying to have as few variables as possible, and the key gets padded again afterwards.\r\n\r\n> The same variable uses different units at different places, and this is a bit confusing.\r\n> \r\n> Maybe rename the one representing the log2 of the space cost spaceCostLog?\r\n\r\nI agree that's not done well. I think this was for the same reason as above but is something I've been planning to change if I can switch from blocks to KiB/MiB.\r\n\r\n> spaceCost must fit in 32-bits. But MAX_SPACECOST is 32, and 1<<32 would overflow.\r\n> \r\n> Maybe absorb LE32(spaceCostLog) instead of LE32(spaceCost)? This will also lift the 2^32 limitation.\r\n\r\nYep, I've been thinking about this too. I thought `MIN_SPACECOST` was 1, leaving room for a weird wrap around, but it isn't for some reason.\r\n\r\n> This assumes that HASH_LEN is a multiple of 4. Which is the case for virtually all hash functions, but is still not universally true.\r\n\r\nDo you mean XOFs?\r\n\r\n> BKDF only needs a PRF. It doesn't have to be a hash-based PRF. So, maybe it would be better to use something like PRF_OUT_LEN rather than HASH_LEN?\r\n\r\nI've written the document on the basis that hash functions are being used at the moment, but this is something that could be changed. I agree the PRF vs hash naming/discussion is confusing and should be consistent.\r\n\r\n> The test vectors use SHA256, so maybe the key length for that one should be included?\r\n\r\nThat's a good point.\r\n\r\n> How could that test vector pass if this represents 2^1024 hash outputs?\r\n\r\nThe test vectors desperately need to be updated as they're for Rust Crypto's Balloon implementation. I either need to do a reference implementation that gets updated alongside the draft and do a few test vectors for now, or I could wait until the whole thing has been finalised and do all the test vectors in one go.\r\n\r\n> I'm not sure about the last part. Most modern CPUs have SHA-256 hardware acceleration.\r\n> \r\n> However, SHA-512 acceleration on Intel CPUs is very new (only available on Lunar Lake CPUs released 3 months ago).\r\n\r\nYeah, this comment is really about the block size (see below) but can be tweaked.\r\n\r\n> Maybe the definition of the PRF() could benefit from a dedicated section, that clearly explains how it's defined for hash functions, MACs and XOFs.\r\n\r\nGood idea.\r\n\r\n> Why does it worsen memory hardness ?\r\n\r\nI think this came from me reading [this](https://ieeexplore.ieee.org/document/7961977) paper ages ago:\r\n\r\n> The attacks of [AB16] perform particularly well when the block size is small. In particular, the (potentially) smaller blocksize of BH is a disadvantage (in comparison with Argon2i-B) as it means that we need to select a higher value of \u03c3 to achieve the same memory usage and the attack quality of [AB16] increase rapidly with n. This would make BH less resistant to the attacks than Argon2i-B.\r\n\r\nWhether I've interpreted the paper correctly is another matter. Password hashing papers aren't the most readable for me.",
+          "createdAt": "2024-12-29T12:46:09Z",
+          "updatedAt": "2024-12-29T12:46:09Z"
         }
       ]
     },
@@ -892,9 +913,17 @@
       "labels": [],
       "body": "Some nice-to-have features. That may be out of scope for that document, but that would solve some real-world problems that all the widely used password hashing algorithms have.\r\n\r\n1) Server relief. Allow the client to perform a part of the computation. In BKDF, `hash` is just the addition of the outputs of independent `BalloonCore` instantiations, so that can easily be implemented. Provided that `pepper` is empty, or can be computed as a shared secret.\r\n\r\n2) Encryption. Section 9 refers to it, but maybe it would be an opportunity to define a standard way to do it. Introducing a dependency on AEADs is not required. Encryption can be made by leveraging the PRF.\r\n\r\n3) The ability to upgrade parameters without having access to the passwords, similar to libhydrogen's [pwhash_upgrade](https://github.com/jedisct1/libhydrogen/wiki/Password-hashing#updating-the-parameters) function. That would be a killer feature. In BKDF, the only way to achieve that would be to define a way to encode the composition of multiple BKDF calls. Probably out of scope for the document. But damn, that's something that would be really amazing to have in new password hashing functions.",
       "createdAt": "2024-12-27T21:11:03Z",
-      "updatedAt": "2024-12-27T21:11:03Z",
+      "updatedAt": "2024-12-29T12:15:48Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "samuel-lucas6",
+          "authorAssociation": "OWNER",
+          "body": "Thanks for these suggestions. Definitely worth thinking about. I never considered 1 with the same computation rather than calling the entire algorithm twice. For 2, the dilemma would probably be the conflict with the `pepper` parameter and maybe the output length. 3 would be nice but isn't something I've read into.",
+          "createdAt": "2024-12-29T12:15:47Z",
+          "updatedAt": "2024-12-29T12:15:47Z"
+        }
+      ]
     }
   ],
   "pulls": [
